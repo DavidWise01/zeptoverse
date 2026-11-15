@@ -33,3 +33,5 @@ jobs:
         run: node kernel/nci-018.test.mjs
       - name: NCI-019 structural transfer and shared-root de-duplication
         run: node kernel/nci-019.test.mjs
+      - name: NCI-020 balanced ternary, local conservation, and recursive foam
+        run: node kernel/nci-020.test.mjs
