@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-007 | Held-out Ionization Prediction</title><style>
+:root{color-scheme:dark;font:16px system-ui;background:#07101d;color:#ebf8ff}*{box-sizing:border-box}body{max-width:1190px;margin:auto;padding:24px;background:radial-gradient(ellipse at 50% 0,#1a3d53,#07101d 65%)}h1{font-size:clamp(2rem,4vw,3.6rem);margin:.2em 0}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:.8rem;color:#6fe8d2}.layout{display:grid;grid-template-columns:1.25fr 1fr;gap:17px}.panel{background:#102237;border:1px solid #335772;padding:19px;border-radius:17px}p{line-height:1.5;color:#b7cddd}canvas{width:100%;height:auto;background:#07162a;border-radius:12px}button{background:#1b4659;color:#eff;border:1px solid #438999;border-radius:9px;padding:10px 13px;cursor:pointer;margin:3px}button:disabled{opacity:.4}.stats{display:flex;flex-wrap:wrap;gap:10px;margin:13px 0}.stat{flex:1;min-width:120px;background:#101b2e;border:1px solid #35516b;border-radius:10px;padding:12px}.stat b{font:700 1.5rem ui-monospace,monospace;color:#8dffe2}.stat small{display:block;color:#b5cbdb}.mono,pre{font-family:ui-monospace,monospace}pre{white-space:pre-wrap;line-height:1.5;font-size:.86rem}a{color:#6af0d6}.good{color:#81f2d4}.warn{color:#ffcb8a}label{display:block;margin:10px 0;color:#b8d1df}select{background:#0e2438;color:#f0ffff;padding:9px;border-radius:8px;border:1px solid #426a83}footer{margin:22px 0;color:#91b4c6;font-size:.85rem}@media(max-width:800px){.layout{grid-template-columns:1fr}body{padding:13px}}</style></head><body>
+<div class="eyebrow">DavidWise01 / zeptoverse / NCI-007</div><h1>Prediction Without Memorization</h1><p>Train on earlier noble-gas first-ionization energies (eV), freeze a model, then reveal a later element. Test whether a simple generation-index trend generalizes. A separately labeled Fibonacci-weighted model is exploratory, not a statement of atomic physics.</p>
+<div class="layout">
+<section class="panel"><h2>Observed training data and held-out test</h2><canvas id="graph" width="760" height="440" role="img" aria-label="First ionization energy versus principal valence shell number"></canvas>
+<div class="stats"><div class="stat"><small>Predicted eV</small><b id="prediction">—</b></div><div class="stat"><small>Reference eV</small><b id="reference">SEALED</b></div><div class="stat"><small>Absolute error</small><b id="error">SEALED</b></div></div>
+<div><button id="freeze">Freeze prediction</button><button id="reveal" disabled>Reveal held-out measurement</button><button id="next">New independent holdout</button></div>
+<p id="status" class="good" aria-live="polite"></p><pre id="witness"></pre></section>
+<section class="panel"><h2>Reproducible model settings</h2>
+<label>Holdout:
+<select id="holdout"><option value="Rn">Radon (n=6, Z=86) · train Ar/Kr/Xe</option><option value="Xe">Xenon (n=5, Z=54) · train Ne/Ar/Kr</option><option value="Kr">Krypton (n=4, Z=36) · train He/Ne/Ar</option></select></label>
+<label>Generator:
+<select id="model"><option value="linear">Least-squares linear in reciprocal n: E=a+b/n</option><option value="fib">Fibonacci-weighted regression in reciprocal n (1,2,3)</option><option value="naive">Last observed energy (persistence baseline)</option></select></label>
+<p>The model and held-out reference are in separate data structures. Selecting a different holdout resets the freeze. Training values are taken from NIST, rather than invented by the variable-cube model.</p>
+<h3>Training and parameters</h3><pre id="formula"></pre>
+<h3>Source and lineage</h3><p class="mono">NIST ASD v5.12 · Neutral-atom ionization energies (eV)</p>
+<p><a href="https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html" target="_blank" rel="noopener noreferrer">NIST Atomic Spectra Database</a></p>
+<h3>Deterministic assertions</h3><p id="tests" class="good"></p><p class="warn">This is a retrospective holdout on already published values, not a genuinely prospective scientific prediction. Three-point regression is fragile; reporting the baseline and all failures prevents overstating success.</p></section></div>
+<footer><a href="./index.html">NCI-002</a> · <a href="./orbital-closure.html">NCI-006</a> · NCI-007 · 60/20/3/3/1/1 → [1/1] terminal state is a symbolic kernel invariant, not a physical energy formula.</footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+// NIST ASD v5.12 neutral first ionization energies, rounded at shown precision.
+const published=[{s:"He",n:1,z:2,e:24.587389011},{s:"Ne",n:2,z:10,e:21.564541},{s:"Ar",n:3,z:18,e:15.7596119},{s:"Kr",n:4,z:36,e:13.9996055},{s:"Xe",n:5,z:54,e:12.1298437}];
+const sealedReferences=Object.freeze({Rn:10.74850,Xe:12.1298437,Kr:13.9996055});
+const runs=[];
+let phase="open", frozen=null, compared=null;
+function settings(){return {holdout:$("holdout").value,model:$("model").value}}
+function sample(s){let idx=published.findIndex(x=>x.s===s.holdout);if(s.holdout==="Rn")idx=published.length;return {train:published.slice(idx-3,idx),n:idx+1,s:s.holdout}}
+function regress(xs,weights){const sw=weights.reduce((a,b)=>a+b,0),mx=xs.reduce((s,p,i)=>s+weights[i]/p.n,0)/sw,my=xs.reduce((s,p,i)=>s+weights[i]*p.e,0)/sw;
+ const cov=xs.reduce((s,p,i)=>s+weights[i]*(1/p.n-mx)*(p.e-my),0),varx=xs.reduce((s,p,i)=>s+weights[i]*(1/p.n-mx)**2,0);
+ const b=cov/varx,a=my-b*mx;return {a,b}}
+function prediction(s){const v=sample(s);
+ if(s.model==="naive")return {value:v.train.at(-1).e,n:v.n,train:v.train,description:"Persistence: E(next)=E(last)"};
+ const w=s.model==="fib"?[1,2,3]:[1,1,1],fit=regress(v.train,w);
+ return {value:fit.a+fit.b/v.n,n:v.n,train:v.train,fit,description:"E(n)=a+b/n; a="+fit.a.toFixed(5)+", b="+fit.b.toFixed(5)+", weights="+w.join(",")}}
+function check(){const p=prediction(settings());let checks=[
+["training finite",p.train.length===3&&p.train.every(v=>Number.isFinite(v.e))],
+["holdout not in training",p.train.every(v=>v.s!==settings().holdout)],
+["prediction finite",Number.isFinite(p.value)],
+["training chronology",p.train.every((v,i)=>!i||v.n>p.train[i-1].n)],
+["freeze is immutable snapshot",!frozen||Object.isFrozen(frozen)],
+["reference remains sealed before reveal",phase!=="frozen"||compared===null]
+];$("tests").textContent=checks.filter(v=>v[1]).length+"/"+checks.length+" invariants: "+checks.map(v=>(v[1]?"✓ ":"✕ ")+v[0]).join("; ")}
+function render(){const s=settings(),p=prediction(s),active=frozen||{...s,...p},val=active.value;
+ $("prediction").textContent=phase==="open"?"—":val.toFixed(4);
+ $("reference").textContent=phase==="revealed"?compared.reference.toFixed(4):"SEALED";
+ $("error").textContent=phase==="revealed"?compared.absoluteError.toFixed(4):"SEALED";
+ $("status").textContent=phase==="open"?"Configure → freeze → reveal.":phase==="frozen"?"Frozen: prediction cannot be changed until reset.":"Counterexample preserved: absolute error "+compared.absoluteError.toFixed(5)+" eV ("+compared.relativeError.toFixed(2)+"%).";
+ $("formula").textContent="Training: "+p.train.map(v=>v.s+" n="+v.n+" E="+v.e.toFixed(5)).join("\n")+"\n"+p.description;
+ $("witness").textContent=phase==="open"?"No frozen evidence packet yet.":JSON.stringify({settings:{holdout:active.holdout,model:active.model},train:active.train.map(x=>[x.s,x.e]),predicted:active.value,reference:compared?.reference??"SEALED",error:compared?.absoluteError??"SEALED"},null,2);
+ $("freeze").disabled=phase!=="open";$("reveal").disabled=phase!=="frozen";
+ $("holdout").disabled=phase!=="open";$("model").disabled=phase!=="open";draw(active);check()}
+function draw(p){const c=$("graph"),ctx=c.getContext("2d"),W=c.width,H=c.height;ctx.clearRect(0,0,W,H);const x=n=>90+(n-1)*112,y=e=>H-55-(e-7)*16;
+ ctx.strokeStyle="#41647c";ctx.lineWidth=1;for(let j=10;j<=25;j+=5){ctx.beginPath();ctx.moveTo(70,y(j));ctx.lineTo(730,y(j));ctx.stroke();ctx.fillStyle="#bbd0df";ctx.font="13px monospace";ctx.fillText(j+" eV",18,y(j))}
+ for(let n=1;n<=6;n++){ctx.fillStyle="#b4cadb";ctx.fillText("n="+n,x(n)-15,H-25)}
+ if(p.fit){ctx.beginPath();ctx.strokeStyle="#97a1fb";ctx.lineWidth=2;for(let n=1;n<=6;n+=.05){let e=p.fit.a+p.fit.b/n;if(n===1)ctx.moveTo(x(n),y(e));else ctx.lineTo(x(n),y(e))}ctx.stroke()}
+ p.train.forEach(v=>{ctx.fillStyle="#6af0d2";ctx.beginPath();ctx.arc(x(v.n),y(v.e),6,0,2*Math.PI);ctx.fill();ctx.font="14px monospace";ctx.fillText(v.s,x(v.n)-10,y(v.e)-14)});
+ if(phase!=="open"){ctx.fillStyle="#ffc37b";ctx.beginPath();ctx.arc(x(p.n),y(p.value),7,0,Math.PI*2);ctx.fill();ctx.fillText("prediction",x(p.n)-28,y(p.value)-17)}
+ if(phase==="revealed"){ctx.fillStyle="#ff668f";ctx.fillRect(x(p.n)-5,y(compared.reference)-5,10,10);ctx.fillText("reference",x(p.n)-35,y(compared.reference)+22)}
+ ctx.fillStyle="#d0e5ef";ctx.font="14px system-ui";ctx.fillText("Neutral first ionization energy (eV) vs valence n",100,24)}
+ $("freeze").onclick=()=>{const s=settings(),p=prediction(s);frozen=Object.freeze({...s,...p,train:p.train.map(x=>Object.freeze({...x}))});phase="frozen";compared=null;render()};
+ $("reveal").onclick=()=>{if(phase!=="frozen")return;const reference=sealedReferences[frozen.holdout];compared={reference,absoluteError:Math.abs(frozen.value-reference),relativeError:100*Math.abs(frozen.value-reference)/reference};phase="revealed";runs.push(Object.freeze({prediction:frozen.value,...compared,holdout:frozen.holdout,model:frozen.model}));render()};
+ function reset(){phase="open";frozen=null;compared=null;render()}
+ $("next").onclick=reset;$("holdout").onchange=reset;$("model").onchange=reset;render();
+</script></body></html>
