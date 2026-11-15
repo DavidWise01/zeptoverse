@@ -45,3 +45,10 @@ The observed chemistry sequence and this repository's geometric interpretation a
 ## Next experiment
 
 Define a recurrence for the variable-cube model that predicts a held-out closure sequence without directly inserting electron counts. Freeze counterexamples as immutable test vectors before altering the recurrence.
+
+
+## NCI-003 — Generational consumption of elements
+
+Open the [interactive consumption simulator](consumption.html). It traverses Z=1…118 one neutral-atom electron per element address and can consume address steps in Fibonacci batch sizes (1,1,2,3,5,8,…). Every intermediate noble-gas closure is detected and preserved even if a batch crosses multiple boundaries. The browser contains six deterministic assertions for period totals, closure addresses, conservation, checkpoint crossing, Fibonacci recursion, and terminal geometry.
+
+This is an **address-occupancy model**, not an actual nucleosynthesis simulator. Chemical elements are defined by proton count; producing heavier nuclei physically requires nuclear reactions, not simply adding electrons. The shell/period lengths are reference inputs, so matching their checkpoints does not establish a predictive theory of atom formation. The Fibonacci batch sizes govern exploration only and do not by themselves predict noble gases.
