@@ -1,0 +1,25 @@
+name: Zeptoverse kernel invariants
+on:
+  push:
+    paths:
+      - 'kernel/**'
+      - '.github/workflows/kernel-tests.yml'
+  pull_request:
+    paths:
+      - 'kernel/**'
+      - '.github/workflows/kernel-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: NCI-013 lineage and ice-rule invariants
+        run: node kernel/nci-013.test.mjs
+      - name: NCI-014 selection and counterexample invariants
+        run: node kernel/nci-014.test.mjs
