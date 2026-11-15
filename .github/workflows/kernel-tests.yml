@@ -23,3 +23,5 @@ jobs:
         run: node kernel/nci-013.test.mjs
       - name: NCI-014 selection and counterexample invariants
         run: node kernel/nci-014.test.mjs
+      - name: NCI-015 proton-network and loop invariants
+        run: node kernel/nci-015.test.mjs
