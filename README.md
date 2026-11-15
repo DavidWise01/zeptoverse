@@ -178,3 +178,28 @@ Source: [J. Chem. Phys. 154, 114502 (2021)](https://doi.org/10.1063/5.0032485).
 ## NCI-013 — Death-Roll Diodic Accretion
 
 [Open the interactive five-part chapter](nci-013.html). Five parts: (1) diatomic/diodic/divisive operators; (2) conservation and lineage witnesses; (3) legal split/branch partitions; (4) Ice IX inspired lattice analogy; (5) live two-stage lineage test (A captures B to form AC, AC captures D to form ACD). This is an abstract computational model, not a validated chemical or quantum-gravity mechanism. The published GitHub chapter itself now embeds the original neon JPG as a base64 data URI, making the chapter self-contained; the standalone chat attachment contains the same illustrated chapter.
+
+## NCI-013 — Executable Death-Roll Diodic Accretion kernel
+
+**Source of truth:** [kernel/nci-013-kernel.mjs](kernel/nci-013-kernel.mjs) and [kernel/nci-013.test.mjs](kernel/nci-013.test.mjs).
+
+This is a deterministic state-transition kernel, **not** an image. It provides five implementations:
+
+1. **Formal operators:** `pair` (diatomic link), `capture` (directional diodic accretion), `divide` (partition).
+2. **Conservation:** each original root appears in exactly one active composite; its integer unit budget cannot change or double count.
+3. **Branch/split:** a state can divide into disjoint root partitions, producing two descendants with unique labels.
+4. **Lattice:** `orient` specifies directed bonds; `iceRule` checks four bonds and two inbound/two outbound directed bonds at selected vertices. This is a graph-level ice-rule analogy, **not a chemically exact proton-location simulation**.
+5. **Runnable harness and previous HTML storyboard:** `replay` deterministically replays a specified sequence, and `checkpoint` seals a snapshot with `1/1 END END`. The illustrated [nci-013.html](nci-013.html) remains documentary, not the kernel.
+
+Run with Node.js using `node kernel/nci-013.test.mjs`. Example:
+
+```js
+import {createKernel,capture,checkpoint} from "./kernel/nci-013-kernel.mjs";
+let state=createKernel(["A","B","D"].map(id=>({id,units:1})));
+state=capture(state,"A","B","AC");       // label AC, roots [A,B]
+state=capture(state,"AC","D","ACD");    // label ACD, roots [A,B,D]
+state=checkpoint(state,"END END");
+```
+
+**Naming convention:** `AC` is a user-defined composite label; ancestry always records `[A,B]`, so root B is not silently replaced by root C. Events are append-only within each new state snapshot and source input states are not mutated. This is a conceptual computational model, not evidence of Ice IX nuclear chemistry or quantum foam behavior.
+
