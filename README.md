@@ -52,3 +52,12 @@ Define a recurrence for the variable-cube model that predicts a held-out closure
 Open the [interactive consumption simulator](consumption.html). It traverses Z=1…118 one neutral-atom electron per element address and can consume address steps in Fibonacci batch sizes (1,1,2,3,5,8,…). Every intermediate noble-gas closure is detected and preserved even if a batch crosses multiple boundaries. The browser contains six deterministic assertions for period totals, closure addresses, conservation, checkpoint crossing, Fibonacci recursion, and terminal geometry.
 
 This is an **address-occupancy model**, not an actual nucleosynthesis simulator. Chemical elements are defined by proton count; producing heavier nuclei physically requires nuclear reactions, not simply adding electrons. The shell/period lengths are reference inputs, so matching their checkpoints does not establish a predictive theory of atom formation. The Fibonacci batch sizes govern exploration only and do not by themselves predict noble gases.
+
+
+## NCI-004 — Conservation and comparison
+
+Run [conservation.html](conservation.html) for two variable-cube reservoirs and an unallocated token pool with invariant `A + B + pool = 118`. Consume draws tokens into A; release returns them; transfer sends A to B; combine moves all of B into A. Every move adds a deterministic ledger entry. Fibonacci batches control *how many address tokens* to consume at once, not the physical nuclear reaction rate.
+
+A separate candidate generator constructs `[2,8,8,18,18,32,32]` using `2n²` with the larger lengths repeated; it then cumulatively predicts `[2,10,18,36,54,86,118]`. The browser hides reference labels until the operator chooses comparison. **This is not a genuinely independent blind prediction**: the rule itself is motivated by known periodic-table patterns. Its usefulness is as a regression test and precursor to held-out predictions, not proof of a new physical law. The app tests six programmatic invariants.
+
+`1/1 END END` is the proposed completed-generation identity. Reservoir tokens are modeling addresses, **not conserved physical electron numbers during nuclear transmutation**; chemical elements are defined by proton count and actual synthesis requires nuclear physics.
