@@ -162,3 +162,14 @@ The base-60 zeptometer-to-Planck gap is log_60(10^-21 / (1.616255e-35)) ≈ 7.76
 [Open the NCI-011 HTML experiment](triadic-engine.html). A visual, normalized-budget model couples three **distinct analogies**, not a confirmed unified physical process: Casimir boundary effects, Kelvin/Peltier/Seebeck thermoelectric transfer, and Newtonian mechanical response. Three proposed semantic operators are **diatomic** (couple), **diodic** (directional gating), and **divisive** (conservative partition). The interactive sliders demonstrate strict allocation of a toy input budget into output, stored, and remaining/loss quantities. The separate high-definition JPG-embedded standalone HTML is delivered as a conversation artifact; the GitHub version includes a vector diagram rather than the image binary.
 
 Physical notes: the Casimir effect involves quantum electromagnetic boundary conditions; Kelvin relations connect Seebeck, Peltier, and Thomson coefficients; a candle-powered thermoelectric generator relies on a temperature difference and the Seebeck effect, whereas Peltier pumping consumes electric work. Newton's law models classical mechanical response. Planck-scale spacetime foam remains hypothetical. The shared 60/20/3/3/1/1 notation is model metadata, not experimentally demonstrated physics.
+
+
+## NCI-012 — Ice IX hydrogen-lattice driver
+
+[Open the interactive hydrogen-ordering experiment](ice-ix-driver.html).
+
+Ice IX is the proton-ordered counterpart of ice III, at low temperatures and high pressure. The water lattice has approximately tetrahedral, four-neighbor hydrogen-bond coordination. Real Ice IX is tetragonal and may retain residual proton disorder. The 2D canvas graph is a **schematic routing analogy**, not the actual structure or guaranteed enforcement of all Bernal-Fowler constraints.
+
+Conceptual operators: **diatomic** (connect two sites), **diodic** (conditionally direct an edge), **divisive** (split an abstract conserved resource). None has been demonstrated as an Ice IX engine or a Planck-foam driver. The full NCI-012 narrative JPG is embedded in a separately generated standalone HTML delivered with the experiment; the interactive GitHub page does not yet include that binary JPG.
+
+Source: [J. Chem. Phys. 154, 114502 (2021)](https://doi.org/10.1063/5.0032485).
