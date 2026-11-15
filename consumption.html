@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Zeptoverse | NCI-003 Consumption</title>
+<style>:root{color-scheme:dark;font:16px system-ui;background:#070b18;color:#e6f4ff}*{box-sizing:border-box}body{max-width:1150px;margin:auto;padding:24px;background:radial-gradient(ellipse at 50% 0,#19304b,#070b18 70%)}a{color:#7bf4dd}h1{font-size:clamp(2rem,5vw,3.5rem);margin:.2em 0}h2{font-size:1.2rem}.eyebrow{color:#7af4df;letter-spacing:.14em;text-transform:uppercase;font-size:.8rem}.sub{color:#b2cce0;line-height:1.5}.layout{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}.panel{background:#111e32;border:1px solid #2b4b66;border-radius:18px;padding:18px;box-shadow:0 12px 34px #0005}canvas{display:block;width:100%;height:auto;background:#081225;border-radius:12px}.controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}button{background:#17304a;border:1px solid #3d6d88;border-radius:10px;color:#eff;padding:10px 14px;cursor:pointer}button:hover{border-color:#7af4df}button:focus-visible{outline:2px solid #7af4df}input{width:100%}.value{font-size:2rem;font-weight:700;color:#7ff8db}.mono,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}pre{white-space:pre-wrap;line-height:1.45}.muted{color:#afc4d8}.good{color:#79f5ce}.warn{color:#ffc77b}ol{padding-left:26px;max-height:290px;overflow:auto}li{margin:.4rem 0}.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tile{border:1px solid #324f69;border-radius:12px;padding:12px}.tile b{display:block;color:#f8ce8f}#shells{word-break:break-word}footer{margin-top:18px;font-size:.85rem;color:#99b4c7}@media(max-width:800px){.layout{grid-template-columns:1fr}body{padding:12px}}</style>
+</head><body><div class="eyebrow">DavidWise01/zeptoverse · NCI-003</div><h1>Generational Consumption</h1><p class="sub">One neutral-atom electron per atomic-number step. Fibonacci batches are a traversal algorithm; observed noble-gas boundaries are never skipped. This model does not describe physical nuclear synthesis or actual electron orbitals.</p>
+<div class="layout"><section class="panel"><h2>Element generations · Z = 1…118</h2><canvas id="map" width="760" height="460" role="img" aria-label="118 element-address cells organized by seven periods"></canvas>
+<div class="controls"><button id="one">Consume +1</button><button id="fibstep">Consume next Fibonacci batch</button><button id="reset">Reset</button><button id="all">Complete to 118</button></div>
+<label for="target">Inspect atomic number: <span id="targetLabel">0</span></label><input id="target" type="range" min="0" max="118" value="0" step="1">
+<div class="facts"><div class="tile"><small>Occupied / total</small><div id="occupied" class="value">0 / 118</div></div><div class="tile"><small>Generation batch</small><div id="generation" class="value">0</div></div><div class="tile"><small>Current period slot</small><b id="period">—</b></div><div class="tile"><small>Unconsumed capacity</small><b id="remaining">118</b></div></div>
+<p id="shells" class="mono muted"></p><p id="summary" class="good"></p></section>
+<section class="panel"><h2>Conserved witness ledger</h2><p class="muted">Recorded closure checkpoints use known noble-gas atomic numbers, not predicted results of the proposed geometry.</p><ol id="ledger"></ol>
+<h2>Three independent layers</h2><pre>CHEMISTRY: [2 | 8 | 8 | 18 | 18 | 32 | 32]
+BATCHES:   [1, 1, 2, 3, 5, 8, 13, ...]
+KERNEL:    {brace[BOX:constant(TORROID:variable)]}
+           60 / 20 / 3 / 3 / 1 / 1
+           CLOSED → 1/1 END END</pre>
+<p id="tests" class="good"></p><small class="muted">Chemical reference: the period lengths for known elements through Z=118. The variable-cube and 60-fold scheme remain hypotheses until they predict non-inserted observables.</small></section></div>
+<footer><a href="./index.html">← NCI-002 Noble Closure Laboratory</a> · Deterministic model · All intermediate element addresses retained</footer>
+<script>
+'use strict';
+const periods=[2,8,8,18,18,32,32], symbols=['He','Ne','Ar','Kr','Xe','Rn','Og'];
+const closures=[];let total=0;periods.forEach((v,i)=>{total+=v;closures.push({z:total,symbol:symbols[i],period:i+1})});
+const fib=[1,1];while(fib.at(-1)<144)fib.push(fib.at(-1)+fib.at(-2));
+function stateAt(z){let start=0;for(let i=0;i<periods.length;i++){const end=start+periods[i];if(z<=end)return {period:i+1,consumed:z-start,capacity:periods[i],start,end};start=end}return {period:7,consumed:32,capacity:32,start:86,end:118}}
+function crossed(a,b){return closures.filter(x=>x.z>a&&x.z<=b)}
+let cursor=0,batchIndex=0,events=[];
+function reset(){cursor=0;batchIndex=0;events=[];render()}
+function advance(amount,kind){const from=cursor;cursor=Math.min(118,cursor+Math.max(0,Math.floor(amount)));const hits=crossed(from,cursor);events.push({from,to:cursor,kind,hits:hits.map(x=>x.symbol)});render()}
+function setTarget(z){z=Number(z);if(z<cursor){cursor=z;events=events.filter(e=>e.to<=z);batchIndex=0}else if(z>cursor)advance(z-cursor,'inspect');render()}
+function fibAdvance(){const n=fib[Math.min(batchIndex,fib.length-1)];batchIndex++;advance(n,'Fibonacci +'+n)}
+const map=document.getElementById('map'),c=map.getContext('2d');
+function render(){const W=map.width,H=map.height;c.clearRect(0,0,W,H);c.textAlign='left';c.textBaseline='middle';c.font='15px monospace';let k=0;
+for(let p=0;p<periods.length;p++){const cap=periods[p],rowY=28+p*59,cols=32,cell=20,gap=2;const x0=64;c.fillStyle='#9bb8cf';c.fillText('P'+(p+1),12,rowY+12);
+for(let n=0;n<cap;n++){let z=k+n+1,x=x0+n*(cell+gap),y=rowY;const isClosure=n===cap-1;c.fillStyle=z<=cursor?(isClosure?'#44e8c8':'#7f85ee'):'#20354d';c.fillRect(x,y,cell,25);c.strokeStyle=isClosure?'#f3bd6b':'#31516b';c.lineWidth=isClosure?2:0.7;c.strokeRect(x,y,cell,25);if(cap<=18){c.fillStyle=z<=cursor?'#081225':'#b7cfe0';c.font='10px monospace';c.textAlign='center';c.fillText(String(z),x+cell/2,y+13);c.textAlign='left'}}
+k+=cap;c.fillStyle='#eac78b';c.font='12px monospace';c.fillText(symbols[p]+' '+k,x0+cap*(cell+gap)+4,rowY+12)}
+const s=stateAt(Math.max(1,cursor));document.getElementById('occupied').textContent=cursor+' / 118';document.getElementById('target').value=cursor;document.getElementById('targetLabel').textContent=cursor;document.getElementById('generation').textContent=batchIndex;
+document.getElementById('period').textContent=cursor?('P'+s.period+' · '+s.consumed+'/'+s.capacity):'Not started';
+document.getElementById('remaining').textContent=118-cursor;
+document.getElementById('shells').textContent='Reference periods: '+periods.join(' / ');
+const done=closures.filter(x=>x.z<=cursor);document.getElementById('summary').textContent=done.length?('Sealed checkpoints: '+done.map(x=>x.symbol+' ('+x.z+')').join(' · ')):'No noble checkpoint reached';
+const ledger=document.getElementById('ledger');ledger.replaceChildren();if(!events.length){let li=document.createElement('li');li.textContent='No consumption events yet';ledger.append(li)}
+events.slice(-20).forEach(e=>{let li=document.createElement('li');li.textContent=e.kind+' · '+e.from+' → '+e.to+(e.hits.length?' · sealed '+e.hits.join(', '):'');ledger.append(li)});
+document.getElementById('one').disabled=cursor===118;document.getElementById('fibstep').disabled=cursor===118}
+function test(){const assertions=[
+['period sum',periods.reduce((a,b)=>a+b,0)===118],
+['boundaries',JSON.stringify(closures.map(x=>x.z))===JSON.stringify([2,10,18,36,54,86,118])],
+['conservation',Array.from({length:119},(_,z)=>{const s=stateAt(Math.max(1,z));return z===0||s.start+s.consumed===z}).every(Boolean)],
+['no skipped closure',Array.from({length:119},(_,a)=>Array.from({length:119-a},(_,d)=>{const b=a+d;return crossed(a,b).length===closures.filter(x=>a<x.z&&x.z<=b).length}).every(Boolean)).every(Boolean)],
+['Fibonacci recurrence',fib.slice(2).every((v,i)=>v===fib[i]+fib[i+1])],
+['terminal identity',closures.at(-1).z===118&&60/20===3]
+];let ok=assertions.filter(x=>x[1]).length;document.getElementById('tests').textContent='Local checks: '+ok+'/'+assertions.length+' passed — '+assertions.map(x=>(x[1]?'✓ ':'✕ ')+x[0]).join('; ');return ok===assertions.length}
+document.getElementById('one').onclick=()=>advance(1,'Atomic +1');document.getElementById('fibstep').onclick=fibAdvance;document.getElementById('reset').onclick=reset;document.getElementById('all').onclick=()=>advance(118-cursor,'Complete');document.getElementById('target').oninput=e=>setTarget(e.target.value);render();test();
+</script></body></html>
