@@ -203,3 +203,22 @@ state=checkpoint(state,"END END");
 
 **Naming convention:** `AC` is a user-defined composite label; ancestry always records `[A,B]`, so root B is not silently replaced by root C. Events are append-only within each new state snapshot and source input states are not mutated. This is a conceptual computational model, not evidence of Ice IX nuclear chemistry or quantum foam behavior.
 
+
+## NCI-014 — Recursive Diodic Selection (executable kernel)
+
+**Run it:** [nci-014.html](nci-014.html) imports and executes [kernel/nci-014-kernel.mjs](kernel/nci-014-kernel.mjs) alongside the NCI-013 kernel. Tests: [kernel/nci-014.test.mjs](kernel/nci-014.test.mjs).
+
+Rules: `candidates` evaluates adjacency between preserved underlying root sites and ranks by number of boundary edges, smaller combined unit count, then lexicographic ID. `attempt` refuses capture if participants are inactive, aren't neighbors, violate the four-edge/two-in/two-out directed rule, exceed a unit cap, or collide with an existing label. Rejections append an immutable-style evidence event without changing active roots or occupied units. `selectAndCapture` tries ranked neighbors deterministically. `iterate` repeats with a bounded step count and an explicit stop reason, preserving all ancestry. The older source state remains unmodified; each operation returns a separate snapshot.
+
+The demonstration `makeDemo` creates a **five-site mathematical complete graph K5 with regular orientation**, so each vertex has four neighbors and two incoming/two outgoing edges. K5 is **not** the crystallographic geometry of ice IX; this tests abstract local ice-rule bookkeeping only. Capture groups lattice sites but does not delete or rearrange microscopic bonds. The kernel does not model actual proton hopping, activation energies, quantum foam, or autonomous chemical synthesis.
+
+To test with Node 22:
+
+```sh
+node kernel/nci-013.test.mjs
+node kernel/nci-014.test.mjs
+```
+
+[GitHub Actions kernel tests](.github/workflows/kernel-tests.yml) run both files on commits affecting the kernel. CI passing is a separate runtime observation, not inferred from file creation. The existing NCI-013 JPG story remains optional documentation only.
+
+**NCI-015 candidate:** Add a real crystallographic lattice graph and proton-position constraints, keeping the 2-in/2-out graph invariant distinct from physically correct ice proton configurations.
