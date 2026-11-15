@@ -222,3 +222,19 @@ node kernel/nci-014.test.mjs
 [GitHub Actions kernel tests](.github/workflows/kernel-tests.yml) run both files on commits affecting the kernel. CI passing is a separate runtime observation, not inferred from file creation. The existing NCI-013 JPG story remains optional documentation only.
 
 **NCI-015 candidate:** Add a real crystallographic lattice graph and proton-position constraints, keeping the 2-in/2-out graph invariant distinct from physically correct ice proton configurations.
+
+## NCI-015 — Microscopic proton constraints and loop moves
+
+[Open the NCI-015 executable HTML runner](nci-015.html). Its actual source is [kernel/nci-015-kernel.mjs](kernel/nci-015-kernel.mjs), with [deterministic Node assertions](kernel/nci-015.test.mjs).
+
+**Physical motivation:** real ice IX is a proton-ordered counterpart of ice III, crystallizing in the tetragonal P4₁2₁2 space group. It may retain small residual hydrogen disorder. References: [AIP J. Chem. Phys. 154, 114502 (2021)](https://doi.org/10.1063/5.0032485); [Royal Society of Chemistry Ice IX crystallography supplement](https://www.rsc.org/suppdata/d0/nj/d0nj04687f/d0nj04687f1.pdf).
+
+**Model fidelity:** The simulator uses an abstract four-coordinated five-site K5 graph, NOT measured Ice IX atomic coordinates. It assigns one bond proton to one donor endpoint and two donor/two acceptor assignments per vertex. It distinguishes conceptual composite grouping (NCI-013/014) from changing the microscopic proton assignment.
+
+- A single directed bond reversal changes endpoint donor counts from 2/2 to 3/1 and 1/3: reject and append an unmodified-state counterexample.
+- Reversing a closed oriented triangle preserves 2/2 at every vertex: accept, copy the state, append the transition.
+- Deterministic cycle enumeration and bounded iteration make replay reproducible.
+- Every edge retains exactly one donor endpoint: total bonded proton assignments stay constant.
+- Invalid cycle selection is recorded, not silently repaired.
+
+This is **not** a physically accurate Ice IX unit cell, dynamical proton-tunneling model, thermodynamic transition model, or Planck-foam validation. The next step should import crystallographic data with independently verified atom coordinates, periodic bonds, and hydrogen positions before claiming Ice IX-specific topology.
