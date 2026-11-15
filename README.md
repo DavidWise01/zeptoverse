@@ -173,3 +173,8 @@ Ice IX is the proton-ordered counterpart of ice III, at low temperatures and hig
 Conceptual operators: **diatomic** (connect two sites), **diodic** (conditionally direct an edge), **divisive** (split an abstract conserved resource). None has been demonstrated as an Ice IX engine or a Planck-foam driver. The full NCI-012 narrative JPG is embedded in a separately generated standalone HTML delivered with the experiment; the interactive GitHub page does not yet include that binary JPG.
 
 Source: [J. Chem. Phys. 154, 114502 (2021)](https://doi.org/10.1063/5.0032485).
+
+
+## NCI-013 — Death-Roll Diodic Accretion
+
+[Open the interactive five-part chapter](nci-013.html). Five parts: (1) diatomic/diodic/divisive operators; (2) conservation and lineage witnesses; (3) legal split/branch partitions; (4) Ice IX inspired lattice analogy; (5) live two-stage lineage test (A captures B to form AC, AC captures D to form ACD). This is an abstract computational model, not a validated chemical or quantum-gravity mechanism. The published GitHub chapter uses self-contained SVG vector art. A separately generated standalone HTML version with the actual neon JPG embedded as base64 is available as a chat attachment; that binary has not been uploaded through the GitHub connection.
