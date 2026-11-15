@@ -1,0 +1,83 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-008 | Generational Error Ledger</title>
+<style>:root{color-scheme:dark;font:16px system-ui;background:#080e1c;color:#eaf7ff}*{box-sizing:border-box}body{max-width:1250px;margin:auto;padding:24px;background:radial-gradient(ellipse at top,#183651,#080e1c 70%)}.tag{color:#69f3d5;letter-spacing:.16em;text-transform:uppercase;font-size:.8rem}h1{font-size:clamp(2rem,4vw,3.6rem);margin:.25em 0}p{color:#b4ccdd;line-height:1.5}.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}.panel{border:1px solid #33546d;border-radius:16px;background:#101e31;padding:19px}canvas{display:block;background:#061325;border-radius:13px;width:100%;height:auto}button{background:#19465b;border:1px solid #468b9b;color:#eff;border-radius:9px;padding:10px 14px;cursor:pointer;margin:3px}button:disabled{opacity:.45}.row{display:flex;gap:9px;flex-wrap:wrap}.stat{flex:1;min-width:140px;border:1px solid #33556d;border-radius:10px;padding:12px}.stat small{color:#b9d1de;display:block}.stat b{font:700 1.5rem ui-monospace,monospace;color:#79f4d9}table{width:100%;border-collapse:collapse;font:13px ui-monospace,monospace}th,td{padding:9px 6px;text-align:right;border-bottom:1px solid #29425c}th:first-child,td:first-child{text-align:left}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace;background:#08172b;border-radius:9px;padding:12px;max-height:310px;overflow:auto}.good{color:#78f2cf}.muted{color:#adc9d9}a{color:#6ff1d4}footer{font-size:.86rem;color:#9db3c6;margin:20px 0}@media(max-width:830px){body{padding:12px}.grid{grid-template-columns:1fr}table{font-size:11px}}</style></head><body>
+<div class="tag">DavidWise01 / zeptoverse / NCI-008</div><h1>Generational Error Ledger</h1>
+<p>Three locked candidate rules. Three chronological holdouts. No fitted target is included in its training window. Each prediction is frozen into an append-only evidence packet before reference comparison.</p>
+<div class="grid"><section class="panel">
+<h2>Absolute prediction error by held-out generation</h2><canvas id="graph" width="780" height="420" aria-label="Bar chart of absolute prediction errors for krypton xenon and radon across three models"></canvas>
+<div class="row"><div class="stat"><small>Unweighted reciprocal-n MAE</small><b id="normal">—</b></div><div class="stat"><small>Fibonacci-weighted MAE</small><b id="fib">—</b></div><div class="stat"><small>Persistence MAE</small><b id="persist">—</b></div></div>
+<div><button id="predict">1 · Freeze all predictions</button><button id="reveal" disabled>2 · Reveal references and score</button><button id="export" disabled>Copy evidence packets</button><button id="reset">Reset view</button></div>
+<p id="status" class="good" aria-live="polite">Before prediction: evaluation reference sealed in the presentation.</p>
+<h2>Prediction and error table</h2><table><thead><tr><th>Holdout</th><th>Model</th><th>Prediction (eV)</th><th>Abs error (eV)</th></tr></thead><tbody id="table"></tbody></table>
+</section><section class="panel"><h2>Fixed experimental protocol</h2>
+<pre>Targets, in chronological order:
+Kr ← train He, Ne, Ar
+Xe ← train Ne, Ar, Kr
+Rn ← train Ar, Kr, Xe
+
+Ordinary: E(n) = a + b/n
+  least-squares weights [1, 1, 1]
+
+Fibonacci-inspired: E(n) = a + b/n
+  least-squares weights [1, 2, 3]
+  (1,2,3 is a consecutive Fibonacci window)
+
+Persistence:
+  E(next) = E(previous)
+
+Metric: mean absolute error (MAE)
+Counterexample: any nonzero residual
+Source ancestry: one NIST ASD dataset</pre>
+<p>All targets are historically known. The Fibonacci weights are an experiment in sample emphasis, <strong>not</strong> a Fibonacci derivation of quantum behavior. These are three correlated holdouts, not three independent experimental witness roots.</p>
+<h2>Immutable-style evidence packets</h2><pre id="packets">No packets frozen.</pre>
+<h2>Deterministic invariants</h2><p id="tests" class="good"></p>
+<p class="muted">Evaluation source: <a href="https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html" target="_blank" rel="noopener">NIST Atomic Spectra Database — Ionization Energies</a>. Values are rounded as recorded in NCI-007. This laboratory does not assert that the 60/20/3/3/1/1 kernel explains ionization energy.</p></section></div>
+<footer><a href="./prediction.html">NCI-007 · Individual holdout</a> · <a href="./orbital-closure.html">NCI-006 · Orbital generator</a> · 1/1 marks completed ledger evaluation, not physical noble closure.</footer>
+<script>
+"use strict";const $=id=>document.getElementById(id);
+// Historical NIST ASD neutral-atom first-ionization energies in eV: one source ancestry.
+const trainOnly=Object.freeze([{symbol:"He",n:1,e:24.587389011},{symbol:"Ne",n:2,e:21.564541},{symbol:"Ar",n:3,e:15.7596119}]);
+const heldOut=Object.freeze([{symbol:"Kr",n:4,e:13.9996055},{symbol:"Xe",n:5,e:12.1298437},{symbol:"Rn",n:6,e:10.74850}]);
+const labels={"ordinary":"Ordinary","fibonacci":"Fibonacci-weighted","persistence":"Persistence"};
+let state="unfrozen",packets=[];
+function fit(train,weights){const sum=weights.reduce((a,b)=>a+b,0),x=train.reduce((a,v,i)=>a+weights[i]/v.n,0)/sum,y=train.reduce((a,v,i)=>a+weights[i]*v.e,0)/sum;
+const covariance=train.reduce((a,v,i)=>a+weights[i]*(1/v.n-x)*(v.e-y),0),variance=train.reduce((a,v,i)=>a+weights[i]*(1/v.n-x)**2,0);
+const b=covariance/variance,a=y-b*x;return {a,b}}
+function forecast(train,n,model){if(model==="persistence")return train.at(-1).e;
+const w=model==="fibonacci"?[1,2,3]:[1,1,1],f=fit(train,w);return f.a+f.b/n}
+function produce(){const series=[...trainOnly,...heldOut],output=[];
+for(let index=3;index<series.length;index++){let target=series[index],train=series.slice(index-3,index).map(v=>({symbol:v.symbol,n:v.n,e:v.e}));
+for(const model of Object.keys(labels)){const predicted=forecast(train,target.n,model);output.push(Object.freeze({target:target.symbol,n:target.n,model,training:Object.freeze(train.map(v=>Object.freeze({...v}))),predicted}))}}
+return Object.freeze(output)}
+function score(){return packets.map(p=>{let target=heldOut.find(x=>x.symbol===p.target),error=Math.abs(p.predicted-target.e);return {...p,reference:target.e,error,relative:100*error/target.e}})}
+function mae(scored,model){let subset=scored.filter(p=>p.model===model);return subset.reduce((a,p)=>a+p.error,0)/subset.length}
+function tests(){const proposed=produce(),s=score(),checks=[
+["exactly nine packets",proposed.length===9],
+["three training values each",proposed.every(p=>p.training.length===3)],
+["no target leakage",proposed.every(p=>p.training.every(v=>v.symbol!==p.target&&v.n<p.n))],
+["finite predictions",proposed.every(p=>Number.isFinite(p.predicted))],
+["source ancestry remains one",trainOnly.length===3&&heldOut.length===3],
+["packets frozen",packets.every(p=>Object.isFrozen(p))],
+["score nonnegative",s.every(p=>p.error>=0&&Number.isFinite(p.error))]
+];$("tests").textContent=checks.filter(x=>x[1]).length+"/"+checks.length+" checks · "+checks.map(v=>(v[1]?"✓ ":"✕ ")+v[0]).join(" · ")}
+function draw(){const canvas=$("graph"),ctx=canvas.getContext("2d");ctx.clearRect(0,0,780,420);const colors=["#64e6d0","#a99eff","#f4bd72"],models=Object.keys(labels);
+ctx.font="14px ui-monospace,monospace";ctx.fillStyle="#b9cddd";ctx.textAlign="left";
+for(let n=0;n<=3;n++){const y=355-n*95;ctx.strokeStyle="#29445e";ctx.beginPath();ctx.moveTo(58,y);ctx.lineTo(750,y);ctx.stroke();ctx.fillText(n+"eV",12,y+4)}
+if(state!=="revealed"){ctx.fillText("Error bars sealed until reference comparison.",170,180);return}
+const scored=score();heldOut.forEach((t,i)=>{models.forEach((m,j)=>{let e=scored.find(p=>p.target===t.symbol&&p.model===m).error;const x=95+i*225+j*54,bar=e*95;ctx.fillStyle=colors[j];ctx.fillRect(x,355-bar,39,bar);ctx.fillStyle="#dceefa";ctx.font="12px monospace";ctx.fillText(e.toFixed(3),x,345-bar)});ctx.fillStyle="#e4f5ff";ctx.font="16px system-ui";ctx.fillText(t.symbol,168+i*225,392)});
+models.forEach((m,j)=>{ctx.fillStyle=colors[j];ctx.fillRect(110+j*210,20,12,12);ctx.fillStyle="#d6e9f5";ctx.font="13px system-ui";ctx.fillText(labels[m],128+j*210,31)})}
+function render(){const scored=state==="revealed"?score():[],tb=$("table");tb.replaceChildren();
+if(packets.length){packets.forEach(p=>{const s=scored.find(q=>q.target===p.target&&q.model===p.model);const tr=document.createElement("tr");[p.target,labels[p.model],p.predicted.toFixed(5),s?s.error.toFixed(5):"SEALED"].forEach(t=>{let td=document.createElement("td");td.textContent=t;tr.appendChild(td)});tb.appendChild(tr)})}
+$("packets").textContent=packets.length?JSON.stringify(state==="revealed"?scored:packets,null,2):"No packets frozen.";
+for(const [model,id] of [["ordinary","normal"],["fibonacci","fib"],["persistence","persist"]])$(id).textContent=state==="revealed"?mae(scored,model).toFixed(4):"SEALED";
+$("predict").disabled=state!=="unfrozen";$("reveal").disabled=state!=="frozen";$("export").disabled=state==="unfrozen";
+if(state==="frozen")$("status").textContent="9 immutable predictions frozen; reveal evaluation references next.";
+if(state==="revealed"){const improve=mae(scored,"ordinary")-mae(scored,"fibonacci");
+$("status").textContent="Fibonacci MAE "+(improve>0?"improves":"worsens")+" over ordinary regression by "+Math.abs(improve).toFixed(4)+" eV. Only three small correlated holdouts; no generalization claim."}
+if(state==="unfrozen")$("status").textContent="Reference sealed in the interface. Freeze nine predictions before scoring.";
+draw();tests()}
+$("predict").onclick=()=>{packets=produce();state="frozen";render()};
+$("reveal").onclick=()=>{state="revealed";render()};
+$("reset").onclick=()=>{state="unfrozen";packets=[];render()};
+$("export").onclick=()=>{const data=JSON.stringify({experiment:"NCI-008",source:"NIST ASD neutral first ionization energies",phase:state,packets:state==="revealed"?score():packets},null,2);if(navigator.clipboard?.writeText)navigator.clipboard.writeText(data).catch(()=>{});else{const e=document.createElement("textarea");e.value=data;document.body.append(e);e.select();document.execCommand("copy");e.remove()}};
+render();
+</script></body></html>
