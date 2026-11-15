@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-016 · Reversible Lattice Memory</title>
+<style>:root{color-scheme:dark;font:16px system-ui;background:#070e1b;color:#e8faff}body{max-width:1100px;margin:auto;padding:24px}h1{color:#83ffe0}p{color:#b4cbdc;line-height:1.55}section{padding:18px;margin:14px 0;background:#102037;border:1px solid #335975;border-radius:15px}button{background:#174a5e;color:white;border:1px solid #4b9ca2;border-radius:10px;padding:10px 13px;cursor:pointer;margin:4px}pre{color:#b5e5f2;white-space:pre-wrap;overflow-wrap:anywhere}a{color:#82f6dc}.good{color:#7ef3d8}.note{color:#f5c78a}</style></head><body><p>DAVIDWISE01 / ZEPTOVERSE / EXECUTABLE NCI-016</p>
+<h1>Reversible Capture, Irreversible History</h1>
+<p>The microscopic proton graph can return to its original bond orientations. Its evidence history cannot be erased by reversal. This is the memory of the computation, not evidence that Ice IX behaves like viscoelastic foam.</p>
+<section><h2>Kernel controls</h2>
+<button id="forward">Forward directed cycle</button>
+<button id="reverse">Reverse last accepted cycle</button>
+<button id="bad">Attempt illegal flip</button>
+<button id="seal">Test 1/1 checkpoint</button>
+<button id="reset">Reset</button>
+<p id="summary" class="good" aria-live="polite"></p><pre id="diagram"></pre>
+</section><section><h2>Orientation and state fingerprints</h2><pre id="state"></pre></section>
+<section><h2>Append-only witness chain</h2><pre id="history"></pre></section>
+<section><h2>Proof obligations</h2><p class="note">Exact return means equality of a canonical *model state*, not restoration of quantum wavefunctions or an isolated laboratory system. FNV-1a fingerprints are deterministic checksums, not cryptographic integrity guarantees.</p><pre id="checks"></pre>
+<p><a href="./kernel/nci-016-kernel.mjs">Executable source</a> · <a href="./kernel/nci-016.test.mjs">Node assertions</a> · <a href="./nci-015.html">Prior proton-rule model</a></p></section>
+<script type="module">
+import {beginMemory,transition,reverseLast,settle,firstCycle,verifyMemory,fingerprint} from "./kernel/nci-016-kernel.mjs";
+import {protonLedger} from "./kernel/nci-015-kernel.mjs";
+const $=id=>document.getElementById(id);let memory=beginMemory();
+function render(message){const bond=protonLedger(memory.state);
+ $("summary").textContent=message;
+ $("diagram").textContent="  ORIGINAL ── roll ──> SHIFTED ── unroll ──> ORIGINAL\n       |                 |                     |\n    genesis          distinct              1/1 END END\n       └────────── same microstate ────────────┘\n              evidence events persist";
+ $("state").textContent="Generation: "+memory.generation+"\nGenesis checksum: "+memory.genesis+"\nCurrent checksum: "+fingerprint(memory.state)+"\n"+bond.protons.map(p=>p.donor+" → "+p.acceptor).join("\n");
+ $("history").textContent=memory.history.length?memory.history.map(e=>"#"+e.generation+" "+e.operator+" "+e.status+" "+e.before+" → "+e.after+(e.seal?" "+e.seal:"")).join("\n"):"Genesis with no transitions";
+ $("checks").textContent="Ice rule: "+bond.iceRule.valid+"\nBond protons: "+bond.numberOfBondProtons+"\nChained history: "+verifyMemory(memory)+"\nRecovered genesis: "+(fingerprint(memory.state)===memory.genesis);
+}
+$("forward").onclick=()=>{const cycle=firstCycle(memory);if(!cycle)return render("No directed triangle");memory=transition(memory,cycle);render("Accepted cycle: "+cycle.join(" → "))};
+$("reverse").onclick=()=>{try{memory=reverseLast(memory);render("Reverse attempt recorded")}catch(e){render(e.message)}};
+$("bad").onclick=()=>{memory=transition(memory,["A","B","A"]);render("Rejected malformed cycle; evidence preserved")};
+$("seal").onclick=()=>{memory=settle(memory);render(memory.checkpoint.restored?"Restored: 1/1 END END":"Not yet restored — OPEN")};
+$("reset").onclick=()=>{memory=beginMemory();render("Genesis reset (new session)")};
+render("Ready");
+</script></body></html>
