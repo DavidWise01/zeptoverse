@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-020 · Balanced Ternary Foam Kernel</title>
+<style>:root{color-scheme:dark;background:#080e1c;color:#eaf8ff;font:16px system-ui}body{max-width:1110px;margin:auto;padding:24px}h1{color:#76ffe4}p{color:#b6cddd;line-height:1.6}section{background:#12213a;border:1px solid #345c78;padding:18px;margin:16px 0;border-radius:16px}button{background:#164e64;color:white;border:1px solid #509ead;border-radius:10px;padding:10px 14px;margin:5px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;color:#b7edee}a{color:#86ffe0}.note{color:#f8ca86}</style></head><body><p>ZEPTOVERSE / NCI-020 / EXECUTABLE BALANCED TERNARY KERNEL</p><h1>−1 / 0 / +1 · Nested Foam</h1><p>The nested kernel has three possible signed deviations per triplet: compression, neutral, expansion. Each branch has an explicit parent and witness root; every generation sums to zero. This is a computational rule, not a temperature scale or experimentally verified Planck foam.</p>
+<section><h2>Run the kernel</h2><button id="rotate">Rotate root triad (+1)</button><button id="unroll">Rotate root triad (−1)</button><button id="release">Convert −1/+1 pair to 0/0</button><button id="reseed">Convert 0/0 pair to −1/+1</button><button id="seal">Checkpoint</button><button id="reset">Reset</button><p id="status"></p><pre id="tree"></pre></section>
+<section><h2>Conservation / generational audit</h2><pre id="audit"></pre><p class="note">Physics boundary: Casimir energy is boundary-dependent relative vacuum energy, not negative kelvin. 0 K is an absolute-temperature reference, not a zero-energy or absence-of-gravity state. Planck quantum foam has not been observed.</p></section>
+<section><h2>Append-only event ledger</h2><pre id="events"></pre><p><a href="./kernel/nci-020-kernel.mjs">Kernel source</a> · <a href="./kernel/nci-020.test.mjs">Deterministic Node assertions</a> · <a href="./nci-019.html">Prior structural transfer lab</a></p></section>
+<script type="module">
+import {newFoam,redistribute,rotate,terminate,audit} from "./kernel/nci-020-kernel.mjs";
+const $=id=>document.getElementById(id);let s=newFoam({depth:3,root:"i",units:13});
+function show(message){const a=audit(s);$("status").textContent=message;
+ const symbols={"-1":"−1","0":" 0","1":"+1"};
+ $("tree").textContent=s.order.filter(id=>s.cells[id].level<=2).map(id=>{
+  const n=s.cells[id];return "  ".repeat(n.level)+symbols[n.sign]+" "+id+" | ancestor="+n.witnessRoot
+ }).join("\n");
+ $("audit").textContent="Balance per generation:\n"+Object.entries(a.levels).map(([g,v])=>"gen "+g+": "+v.cells+" sites, net "+v.balance).join("\n")+"\nWhole kernel balanced: "+a.allBalanced+"\nRoot units: "+a.rootUnits+"\nWitness ancestry: "+a.witnessRoots.join(", ")+"\nSeal: "+(s.seal??"OPEN");
+ $("events").textContent=s.events.length?s.events.map(e=>e.seq+" "+e.type+" "+JSON.stringify(e.payload)).join("\n"):"Genesis: no events";}
+$("rotate").onclick=()=>{s=rotate(s,"i",1);show("Rotated positive")};
+$("unroll").onclick=()=>{s=rotate(s,"i",-1);show("Rotated negative")};
+$("release").onclick=()=>{s=redistribute(s,"i/n","i/p");show("Attempt pair neutralization")};
+$("reseed").onclick=()=>{s=redistribute(s,"i/n","i/p");show("Attempt pair reseeding")};
+$("seal").onclick=()=>{s=terminate(s);show("1/1 END END")};
+$("reset").onclick=()=>{s=newFoam({depth:3,root:"i",units:13});show("Reset genesis")};show("Ready");
+</script></body></html>
