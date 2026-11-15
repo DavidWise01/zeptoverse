@@ -288,3 +288,20 @@ Node test: `node kernel/nci-017.test.mjs`; committed workflow includes NCI-017.
 **Evidence boundary:** this proves a software policy can improve against a fixed, constructed score while its surrogate graph remains invariant; it is **not** experimental learning by water molecules, full crystallographic Ice IX simulation, or quantum-gravity evidence. The runtime and tests are authored in the repository, and CI pass must be checked separately.
 
 Run: `node kernel/nci-018.test.mjs`.
+
+## NCI-019 — Transferable learning without duplicate witnesses
+
+[Runnable laboratory](nci-019.html) · [Kernel source](kernel/nci-019-kernel.mjs) · [Node tests](kernel/nci-019.test.mjs).
+
+**Invariant:** identical directed graph structure under a validated one-to-one site relabeling can support *mapped policy transfer*. Raw node labels need not match, but every graph bond and its donor→acceptor orientation must match exactly.
+
+- `findMapping` checks all one-to-one mappings for at most seven original sites, returning a verified directed graph isomorphism (no approximation).
+- `renameSurrogate` produces a disconnected naming surface for an identical abstract graph; it is not a second scientific witness.
+- `transfer` maps source `POLICY_FEEDBACK` to a target legal cycle, canonicalizes its cyclic starting vertex, and preserves the source event's ancestry.
+- A repeated import with the same `sourceId#sequence` is rejected as duplicate, rather than counted as corroboration.
+- `checkTransfer` verifies independent-witness status stays false for imported observations, root keys are unique, and the local ice rule holds.
+- The underlying target orientation never changes during policy transfer.
+
+The demonstration uses synthetic feedback from NCI-017 and a mathematical K5 proton-rule surrogate. It proves neither real Ice IX structure nor learning by hydrogen bonds. **Exact policy transfer is allowed only after structural verification**; no transfer is assumed on a different graph.
+
+Run with Node 22: `node kernel/nci-019.test.mjs`. CI must be independently checked for success.
