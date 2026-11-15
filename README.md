@@ -80,3 +80,16 @@ At each discrete round, the two populations request units at user-selected rates
 An optional Fibonacci schedule multiplies per-round *requested demand*, not chemical shell capacity. The finite-pool, token-cost, and competition rules are a **toy generational model**, not chemical binding-energy estimates, nuclear transmutation, or measured noble-gas thermodynamics. The known chemical closures serve as provided address targets, so reaching them is not predictive confirmation.
 
 **NCI-006 candidate:** Remove the supplied closure-address lookup, derive boundaries from a separately specified occupancy rule, and compare predictions on a withheld sequence without modifying the recurrence after inspection.
+
+
+## NCI-006 — Derive closure addresses from subshell filling
+
+[Open the interactive NCI-006 orbital closure generator](orbital-closure.html).
+
+The generator constructs subshell labels for n = 1..7, with l = 0..min(n-1,3), each capacity 2(2l+1). It sorts subshells by increasing (n+l), breaking ties by n, and fills in that approximate Aufbau order. A generated closure is declared after a filled 1s² or after a fully filled ns² np⁶ pattern. Candidate closure addresses are computed as cumulative occupancies, without reading the reference noble-gas address array.
+
+The separate comparison reference is [2,10,18,36,54,86,118]; the interface reveals it only when the user chooses comparison. A Fibonacci batch control and stepwise electron addition preserve intermediate closure crossings. Built-in assertions check ordering, capacity, electron totals, monotonic closures, recursion, and boundary traversal.
+
+**Limitations:** This is a chemistry-informed reconstruction, not an independently blind prediction or a derivation from the proposed 60-fold variable cube. The Madelung (n+l) ordering is approximate, has known exceptions, and does not replace many-electron quantum calculations. Oganesson's physical behavior is affected by relativistic effects. A successful comparison does not establish the geometric model. The 1/1 terminal mark is a modeling label applied at detected boundaries.
+
+**NCI-007 candidate:** Use a fully declared generational model to predict a held-out quantity (not an address already implicit in known shell structure), preserve failures, and compare it with an independent dataset.
