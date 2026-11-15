@@ -27,3 +27,5 @@ jobs:
         run: node kernel/nci-015.test.mjs
       - name: NCI-016 reversible state and memory invariants
         run: node kernel/nci-016.test.mjs
+      - name: NCI-017 policy-memory and physical-state separation
+        run: node kernel/nci-017.test.mjs
