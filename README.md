@@ -238,3 +238,21 @@ node kernel/nci-014.test.mjs
 - Invalid cycle selection is recorded, not silently repaired.
 
 This is **not** a physically accurate Ice IX unit cell, dynamical proton-tunneling model, thermodynamic transition model, or Planck-foam validation. The next step should import crystallographic data with independently verified atom coordinates, periodic bonds, and hydrogen positions before claiming Ice IX-specific topology.
+
+## NCI-016 — Reversible geometry, irreversible evidence lineage
+
+[Execute the kernel in HTML](nci-016.html) · [Source](kernel/nci-016-kernel.mjs) · [Node tests](kernel/nci-016.test.mjs).
+
+**Invariant:** A legal directed bond-cycle reversal changes the orientation of an abstract ice-rule graph while retaining each site's 2-in/2-out condition. Reversing that same cycle in reverse orientation recovers the **identical canonical model state**, but the event history contains both transitions. Thus `state_2 = state_0` does not imply `history_2 = history_0`.
+
+- `beginMemory` captures an immutable-style genesis snapshot and a deterministic state checksum.
+- `transition` adds an accepted loop reversal or a rejected counterexample and records both before/after checksums.
+- `reverseLast` constructs the inverse of the most recently accepted directed cycle.
+- `settle` issues `1/1 END END` only when the current model state exactly matches genesis.
+- `verifyMemory` checks continuous event ancestry, unchanged state for rejected operations, and local ice-rule validity.
+
+Checksums use **FNV-1a 32-bit** solely to detect accidental state mismatch; collisions are possible, so this is not a cryptographic witness or formal proof of exact equality. Future work should also compare full canonical structures and, if adversarial integrity is needed, use a cryptographic digest.
+
+The model still uses the five-site **K5 surrogate**, not physical Ice IX coordinates. The algorithm demonstrates reversible graph transformations and permanent computational history, not laboratory-reversible thermodynamics or evidence that spacetime is elastic memory foam.
+
+Test with `node kernel/nci-016.test.mjs`. GitHub CI runs the test on changes to the kernel.
