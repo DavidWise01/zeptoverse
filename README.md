@@ -93,3 +93,25 @@ The separate comparison reference is [2,10,18,36,54,86,118]; the interface revea
 **Limitations:** This is a chemistry-informed reconstruction, not an independently blind prediction or a derivation from the proposed 60-fold variable cube. The Madelung (n+l) ordering is approximate, has known exceptions, and does not replace many-electron quantum calculations. Oganesson's physical behavior is affected by relativistic effects. A successful comparison does not establish the geometric model. The 1/1 terminal mark is a modeling label applied at detected boundaries.
 
 **NCI-007 candidate:** Use a fully declared generational model to predict a held-out quantity (not an address already implicit in known shell structure), preserve failures, and compare it with an independent dataset.
+
+
+## NCI-007 — Held-out first ionization energy prediction
+
+[Open prediction.html](prediction.html).
+
+The independent target observable is neutral-atom first ionization energy in electronvolts, from NIST ASD. The model is fitted to three preceding noble gases and evaluated on a selected held-out noble gas (Kr, Xe, or Rn). The reference remains sealed in the UI until the prediction is frozen.
+
+Models:
+- Least-squares regression: E(n) = a + b/n, fitted to the three previous noble gases.
+- Fibonacci-weighted least squares with weights (1, 2, 3) as an exploratory heuristic.
+- Persistence baseline: use the most recent known energy.
+
+NIST neutral first ionization energies (eV), as recorded in the source: He 24.587389011, Ne 21.564541, Ar 15.7596119, Kr 13.9996055, Xe 12.1298437, Rn 10.74850.
+
+Radon training on Ar/Kr/Xe using unweighted reciprocal-n regression predicts 11.4507521 eV. The NIST reference is 10.74850 eV; the absolute error is 0.7022521 eV (6.53349%). **Preserve this counterexample; do not claim exact prediction.**
+
+Source: [NIST Atomic Spectra Database — Ionization Energies](https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html), ver. 5.12; query for neutral atoms: https://physics.nist.gov/cgi-bin/ASD/ie.pl?at_num_out=on&el_name_out=on&shells_out=on&spectra=H-Og+i&units=1
+
+These are retrospective holdouts, not new measurements or genuinely prospective predictions. The model does not follow from the 60/20/3/3/1/1 geometry; Fibonacci weights are a hypothesis that can be compared against the unweighted and persistence baselines. Neither GitHub and its Pages mirror nor this page and its data source are independent confirmations of the hypothesis.
+
+**NCI-008 candidate:** Preserve prediction packets and run leave-one-generation-out scoring across several targets, comparing the Fibonacci heuristic against a non-Fibonacci baseline before making claims of improvement.
