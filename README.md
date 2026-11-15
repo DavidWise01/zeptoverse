@@ -272,3 +272,19 @@ Test with `node kernel/nci-016.test.mjs`. GitHub CI runs the test on changes to 
 **Important limitations:** Feedback is deliberately synthetic in the initial test, not observed experimental Ice IX behavior. The bond topology is still the K5 surrogate, not crystallographic Ice IX. The policy ledger is append-only by returned-state convention but not cryptographically tamper-proof. No self-learning is inferred from the geometry itself.
 
 Node test: `node kernel/nci-017.test.mjs`; committed workflow includes NCI-017.
+
+## NCI-018 — Closed-loop generational self-correction
+
+[Interactive kernel runner](nci-018.html) · [ES module](kernel/nci-018-kernel.mjs) · [Node assertions](kernel/nci-018.test.mjs)
+
+**New invariant:** `physical_state_after_trial === physical_state_before_trial` for each bounded policy-calibration trial, while the feedback ledger grows. The successor policy may choose a different action from the same microscopic state based on its recorded outcomes.
+
+1. `objectiveFor` declares a fixed *synthetic* task: select the lexicographically last legal directed cycle in genesis. This target is not a property of physical Ice IX.
+2. `trial` selects a candidate using NCI-017, performs a legal microscopic cycle reversal (NCI-015), reverses the same cycle to restore genesis (NCI-017), checks exact microscopic orientation equality, then appends feedback and an evaluation event.
+3. `train` executes at most a caller-specified number of generations, stopping early on target success, no candidate, or budget exhaustion.
+4. `audit` checks all evaluations recorded restoration, physical state still matches original genesis, and local ice-rule remains valid.
+5. `kernel/nci-018.test.mjs` asserts scores improve from -1 to +1 over two generations in the declared toy task and that repeated runs produce structurally identical results.
+
+**Evidence boundary:** this proves a software policy can improve against a fixed, constructed score while its surrogate graph remains invariant; it is **not** experimental learning by water molecules, full crystallographic Ice IX simulation, or quantum-gravity evidence. The runtime and tests are authored in the repository, and CI pass must be checked separately.
+
+Run: `node kernel/nci-018.test.mjs`.
