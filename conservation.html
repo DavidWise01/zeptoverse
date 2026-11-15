@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse — NCI-004 | Conservation & Blind Closure</title><style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#060b17;color:#ecf7ff}*{box-sizing:border-box}body{max-width:1160px;margin:auto;padding:25px;background:radial-gradient(ellipse at top,#152d49,#060b17 65%)}h1{font-size:clamp(2rem,5vw,3.5rem);margin:.25em 0}.eyebrow{color:#6bf5d7;letter-spacing:.15em;font-size:.8rem;text-transform:uppercase}.sub{line-height:1.55;color:#b2cade}.layout{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}.panel{padding:20px;border:1px solid #31516b;border-radius:17px;background:#111d30}canvas{width:100%;height:auto;background:#071122;border-radius:12px}button{padding:9px 13px;margin:4px;background:#17344d;color:#edffff;border:1px solid #3d718b;border-radius:10px;cursor:pointer}button:hover{background:#205c69}button:disabled{opacity:.4;cursor:default}button:focus-visible{outline:2px solid #70ffe3}.metric{font-size:1.9rem;color:#7ef6da;font-weight:700}.row{display:flex;gap:9px;flex-wrap:wrap}.stat{flex:1;min-width:120px;padding:12px;border:1px solid #304d65;border-radius:12px}.stat small{display:block;color:#b5cddd}.mono,pre{font-family:ui-monospace,monospace}pre{white-space:pre-wrap;font-size:.88rem}ol{max-height:280px;overflow:auto;padding-left:27px}li{margin:6px 0;color:#c5d9eb}.good{color:#7ff3cc}.warn{color:#f4c67b}.muted{color:#aac3d7}a{color:#70efd4}footer{color:#92adc1;margin-top:25px;font-size:.86rem}@media(max-width:770px){.layout{grid-template-columns:1fr}body{padding:12px}}</style></head><body>
+<div class="eyebrow">zeptoverse / living laboratory / NCI-004</div><h1>Consumption · Release · Combine</h1>
+<p class="sub">Model conserved address tokens across two variable cubes, then generate noble-gas boundary predictions from a quadratic period rule. Reference labels are hidden until comparison. This is an abstract simulation, not a nuclear reaction or physically validated chemistry model.</p>
+<div class="layout"><section class="panel"><h2>Variable cubes A and B</h2><canvas id="scene" width="760" height="420" aria-label="Two nested cube reservoirs, token counts, and boundary markers"></canvas>
+<div class="row"><div class="stat"><small>Cube A</small><div id="a" class="metric">0</div></div><div class="stat"><small>Cube B</small><div id="b" class="metric">0</div></div><div class="stat"><small>Unallocated pool</small><div id="pool" class="metric">118</div></div></div>
+<p class="muted">Total available token budget: 118. Every move preserves <span class="mono">A+B+pool=118</span>.</p>
+<div><button id="consume">Consume +1 → A</button><button id="release">Release −1 ← A</button><button id="split">Transfer 1: A → B</button><button id="combine">Combine B into A</button><button id="fib">Consume Fibonacci batch</button><button id="reset">Reset</button></div>
+<p id="identity" class="good"></p><h3>Append-only event witness</h3><ol id="events"></ol></section>
+<section class="panel"><h2>Blind prediction gate</h2><p class="muted">Candidate rule (specified before revealing the comparison): period lengths <span class="mono">2n²</span>, with each length after the first repeated twice.</p>
+<pre id="predictions"></pre><button id="compare">Compare to reference closures</button><div id="comparison" aria-live="polite" class="muted">Reference withheld until comparison.</div>
+<h3>Model boundary</h3><pre>{ brace [ BOX : constant
+  ( TORROID : variable ) ]
+}
+60 / 20 / 3 / 3 / 1 / 1
+G[n+1] = conserve(consume/release/combine)
+CLOSED(G) → identity(G) = 1/1
+</pre><p id="tests" class="good"></p><p class="muted">Fibonacci controls token batch sizes only. The quadratic period rule supplies the candidate chemistry pattern; geometric 60-fold symmetry has not been shown to predict it.</p></section></div>
+<footer><a href="./index.html">NCI-002 · Shell laboratory</a> · <a href="./consumption.html">NCI-003 · Generational consumption</a> · NCI-004 model</footer>
+<script>
+'use strict';
+const TOTAL=118, reference=[2,10,18,36,54,86,118], names=['He','Ne','Ar','Kr','Xe','Rn','Og'];
+const lengths=[2];for(let n=2;n<=4;n++)lengths.push(2*n*n,2*n*n);
+function prefix(xs){let k=0;return xs.map(v=>k+=v)}
+const candidates=prefix(lengths);
+const fib=[1,1];for(let i=2;i<15;i++)fib.push(fib[i-1]+fib[i-2]);
+let state={a:0,b:0,pool:TOTAL},index=0,events=[],revealed=false;
+const get=id=>document.getElementById(id);
+function record(kind,before){events.push({sequence:events.length+1,kind,before,after:{...state}})}
+function operate(kind,amount=1){const before={...state};let delta=0;
+if(kind==='consume'){delta=Math.min(state.pool,amount);state.pool-=delta;state.a+=delta}
+else if(kind==='release'){delta=Math.min(state.a,amount);state.a-=delta;state.pool+=delta}
+else if(kind==='transfer'){delta=Math.min(state.a,amount);state.a-=delta;state.b+=delta}
+else if(kind==='combine'){delta=state.b;state.a+=delta;state.b=0}
+record(kind+' '+delta,before);render()}
+function reset(){state={a:0,b:0,pool:TOTAL};index=0;events=[];revealed=false;render()}
+function draw(){const c=get('scene'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);const centers=[{x:195,y:188,n:state.a,label:'A',color:'#64e8d0'},{x:550,y:188,n:state.b,label:'B',color:'#b69eff'}];
+for(const o of centers){const s=126,d=34,x=o.x-s/2,y=o.y-s/2;ctx.strokeStyle=o.color;ctx.lineWidth=2;ctx.strokeRect(x,y,s,s);ctx.strokeRect(x+d,y-d,s,s);ctx.beginPath();for(const [x1,y1,x2,y2] of [[x,y,x+d,y-d],[x+s,y,x+s+d,y-d],[x,y+s,x+d,y+s-d],[x+s,y+s,x+s+d,y+s-d]]){ctx.moveTo(x1,y1);ctx.lineTo(x2,y2)}ctx.stroke();
+ctx.fillStyle=o.color;ctx.font='bold 19px system-ui';ctx.fillText('Cube '+o.label,o.x-40,45);
+ctx.font='bold 42px ui-monospace,monospace';ctx.fillText(String(o.n),o.x-25,o.y+5);
+for(let i=0;i<Math.min(o.n,50);i++){let angle=i*2.399963,rad=11+Math.sqrt(i)*6.6;ctx.fillStyle=i%2?'#bcaaff':'#65f4d7';ctx.beginPath();ctx.arc(o.x+Math.cos(angle)*rad,o.y+45+Math.sin(angle)*rad,2.2,0,Math.PI*2);ctx.fill()}}
+ctx.fillStyle='#f5cc83';ctx.font='17px ui-monospace,monospace';ctx.fillText('60 / 20 / 3 / 3 / 1 / 1',238,383);
+ctx.fillStyle='#91bdd0';ctx.font='14px system-ui';ctx.fillText('Abstract conserved tokens • Not electron or nuclear orbitals',170,410)}
+function test(){const checks=[
+['conservation',state.a+state.b+state.pool===TOTAL],
+['nonnegative',[state.a,state.b,state.pool].every(x=>Number.isInteger(x)&&x>=0)],
+['fixed budget',events.every(e=>e.after.a+e.after.b+e.after.pool===TOTAL)],
+['quadratic recurrence',lengths.every((x,i)=>x===2*(i===0?1:Math.floor((i+2)/2))**2)],
+['generated boundaries',candidates.at(-1)===118],
+['Fibonacci recurrence',fib.slice(2).every((x,i)=>x===fib[i]+fib[i+1])]
+];get('tests').textContent='In-browser assertions: '+checks.filter(x=>x[1]).length+'/'+checks.length+' passed'+(checks.every(x=>x[1])?' ✓':' ✕')}
+function render(){get('a').textContent=state.a;get('b').textContent=state.b;get('pool').textContent=state.pool;
+get('identity').textContent='Identity: '+state.a+' + '+state.b+' + '+state.pool+' = 118 • '+(state.a+state.b+state.pool===TOTAL?'CONSERVED':'BROKEN');
+const box=get('events');box.replaceChildren();if(!events.length){let li=document.createElement('li');li.textContent='Baseline frozen: A=0, B=0, pool=118';box.append(li)}
+events.slice(-18).forEach(e=>{let li=document.createElement('li');li.textContent='#'+e.sequence+' '+e.kind+' → ['+e.after.a+','+e.after.b+','+e.after.pool+']';box.append(li)});
+get('predictions').textContent='Predicted period lengths: '+lengths.join(' / ')+'\nGenerated checkpoints: '+candidates.join(' / ')+'\nFibonacci consumption next: '+fib[Math.min(index,fib.length-1)];
+get('comparison').textContent=revealed?('Reference: '+reference.map((v,i)=>names[i]+'='+v).join(' · ')+'\nPrediction match: '+candidates.filter((v,i)=>v===reference[i]).length+'/'+reference.length+' exact. This is pattern reconstruction, not independent discovery.'):'Reference withheld until comparison.';
+get('consume').disabled=state.pool===0;get('release').disabled=state.a===0;get('split').disabled=state.a===0;get('combine').disabled=state.b===0;get('fib').disabled=state.pool===0;draw();test()}
+get('consume').onclick=()=>operate('consume');get('release').onclick=()=>operate('release');get('split').onclick=()=>operate('transfer');get('combine').onclick=()=>operate('combine');get('fib').onclick=()=>{const n=fib[Math.min(index,fib.length-1)];index++;operate('consume',n)};get('reset').onclick=reset;get('compare').onclick=()=>{revealed=true;render()};render();
+</script></body></html>
