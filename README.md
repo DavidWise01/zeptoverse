@@ -305,3 +305,19 @@ Run: `node kernel/nci-018.test.mjs`.
 The demonstration uses synthetic feedback from NCI-017 and a mathematical K5 proton-rule surrogate. It proves neither real Ice IX structure nor learning by hydrogen bonds. **Exact policy transfer is allowed only after structural verification**; no transfer is assumed on a different graph.
 
 Run with Node 22: `node kernel/nci-019.test.mjs`. CI must be independently checked for success.
+
+## NCI-020 — Balanced ternary nested-foam kernel, not literal kelvin
+
+[Interactive executable runner](nci-020.html) · [kernel source](kernel/nci-020-kernel.mjs) · [tests](kernel/nci-020.test.mjs)
+
+The kernel now preserves the canonical **`{-1, [0, (+1)]}`** set. The three digits are dimensionless signs of relative deformation or adjustment: `-1` negative, `0` reference, `+1` positive. They **do not mean** physically measured -1 K, 0 K, or +1 K. Negative temperatures have special thermodynamic interpretations in restricted systems and are not simply less than zero kelvin. Casimir vacuum-energy changes can be negative *relative to the reference vacuum* for certain boundaries but are not a source of infinite energy. Hypothetical Planck-scale spacetime foam is not observed three-level material.
+
+- `balancedDigits` and `decodeDigits` implement signed base-3 integer representation.
+- `newFoam` recursively partitions one root into ordered three-child generations: each child has sign `-1,0,+1` and preserves a single `witnessRoot`. Depth is bounded to 7.
+- `rotate` cyclically permutes sibling signs without changing net signed balance.
+- `redistribute` changes an opposing signed pair to a neutral pair and reverses that operation; invalid transfers record a `REJECT` event.
+- `verifyFoam` and `audit` check three children per parent, local sum zero, total signed balance zero at each depth, identical root ancestry, sequence continuity and unchanged root units.
+- `terminate` emits `1/1 END END` only after conservation checks.
+- `kernel/nci-020.test.mjs` checks signed digits, 1/3/9/27 generation sizes, inverse rotations, pair operations, rejection, checkpoint and replay.
+
+**Bound:** This models a nested signed-state algebra and bookkeeping across scale, not a physically validated Casimir/quantum-foam law. A physically faithful follow-up needs measurable energy units, boundary conditions and separate thermodynamic variables.
