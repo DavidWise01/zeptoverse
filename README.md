@@ -115,3 +115,25 @@ Source: [NIST Atomic Spectra Database — Ionization Energies](https://physics.n
 These are retrospective holdouts, not new measurements or genuinely prospective predictions. The model does not follow from the 60/20/3/3/1/1 geometry; Fibonacci weights are a hypothesis that can be compared against the unweighted and persistence baselines. Neither GitHub and its Pages mirror nor this page and its data source are independent confirmations of the hypothesis.
 
 **NCI-008 candidate:** Preserve prediction packets and run leave-one-generation-out scoring across several targets, comparing the Fibonacci heuristic against a non-Fibonacci baseline before making claims of improvement.
+
+
+## NCI-008 — Generational error ledger
+
+[Open error-ledger.html](error-ledger.html).
+
+**Protocol frozen before comparison:** For each chronological holdout Kr, Xe, and Rn, fit using only the preceding three noble gases. Compare three declared candidate models: unweighted least-squares in 1/n; Fibonacci-weighted least-squares with weights [1,2,3]; and the last-observation persistence baseline. Prediction packets contain the target, the model, and the specific training triple; they are frozen before the UI reveals the target measurement. Scoring uses MAE (mean absolute error in eV).
+
+Reference data lineage: all neutral-atom first ionization energy measurements come from the same NIST ASD source cited in NCI-007. Overlapping training windows are not independent witness roots.
+
+Expected retrospective absolute errors (eV; approximate):
+
+| Holdout | Ordinary | Fibonacci-weighted | Persistence |
+|---|---:|---:|---:|
+| Kr | 2.455527 | 1.855863 | 1.760006 |
+| Xe | 0.002284 | 0.156148 | 1.869762 |
+| Rn | 0.702252 | 0.583869 | 1.381344 |
+| **MAE** | **1.053354** | **0.865293** | **1.670371** |
+
+The Fibonacci-weighted candidate improves aggregate MAE over the unweighted regression by approximately 0.188061 eV in this tiny retrospective set, but it loses on the Xe holdout and on Kr relative to persistence. It is **not validated as a general law**: three correlated cases are too few, and choices informed by prior known chemistry create model-selection bias. All errors are preserved, including unfavorable comparisons.
+
+**Technical note:** The in-browser frozen ledger is session-local and is not automatically persisted to GitHub. The protocol and the expected reference comparison are stored in the repository. NCI-009 should prioritize a new out-of-sample dataset and explicit source-independent verification instead of interpreting this tiny benchmark as physical discovery.
