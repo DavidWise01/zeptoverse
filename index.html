@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zeptoverse | Noble Closure Laboratory</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui,sans-serif;background:#070b18;color:#e7f6ff}
+*{box-sizing:border-box}body{max-width:1150px;margin:auto;padding:24px;background:radial-gradient(ellipse at 50% 0,#162b46,#070b18 60%)}
+h1{font-size:clamp(2rem,5vw,4rem);margin:.2em 0}p{line-height:1.6;color:#adc5db}.top{color:#6ff6df;letter-spacing:.18em;text-transform:uppercase}
+main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(270px,1fr);gap:20px}.panel{background:#101a2ddd;border:1px solid #2b4860;border-radius:18px;padding:20px;box-shadow:0 12px 45px #0005}
+canvas{width:100%;height:auto;border-radius:14px;background:#060d1d}button{cursor:pointer;border:1px solid #365a79;background:#182943;color:#eaf9ff;border-radius:10px;padding:9px 12px;margin:3px}
+button[aria-pressed=true]{background:#006e70;border-color:#73e8d7}.metric{font-family:ui-monospace,monospace;color:#9fffe4}
+pre{white-space:pre-wrap;color:#d6ccff;font-size:.89rem}a{color:#72f5df}table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:8px;border-bottom:1px solid #34506a}
+small{color:#b6c5d5}#status{color:#77f5c9}footer{margin-top:22px;color:#8caac5}
+@media(max-width:760px){main{grid-template-columns:1fr}body{padding:14px}}
+</style></head><body><div class="top">DavidWise01 / zeptoverse · NCI-002</div>
+<h1>Noble Closure Laboratory</h1>
+<p>Explore the observed noble-gas electron counts, the quadratic period-length pattern, and a separate Fibonacci comparison. The 60/20/3/3/1/1 geometry is a proposed modeling convention, not a quantum-mechanical derivation.</p>
+<main><section class="panel"><h2>Variable cube · shell rings</h2><div id="buttons" aria-label="Choose noble gas"></div>
+<canvas id="view" width="720" height="560" role="img" aria-label="Stylized concentric electron-shell diagram"></canvas>
+<p id="detail" class="metric"></p></section>
+<section class="panel"><h2>Generational ledger</h2><table><thead><tr><th>Noble</th><th>Z</th><th>Increment</th></tr></thead><tbody id="ledger"></tbody></table>
+<h3>Two independent sequences</h3>
+<p>Quadratic capacity: <span class="metric">C(n) = 2n²</span></p><pre id="quadratic"></pre>
+<p>Fibonacci recurrence: <span class="metric">F(n+2)=F(n+1)+F(n)</span></p><pre id="fib"></pre>
+<h3>Operator / invariant</h3><pre>{ brace [ BOX : constant
+ ( TORROID : variable )
+  60 / 20 / 3 / 3 / 1 / 1
+  [ CLOSED ] → [1/1] END END
+]}</pre>
+<p id="status"></p><small>Shell rings show counts, not electron orbitals, actual distances, or shell radii. Oganesson's electronic behavior is predicted to differ significantly from lighter noble gases.</small>
+</section></main><footer>Append-only conceptual model · Physical electron configurations and proposed geometry are distinguished.</footer>
+<script>
+const gases=[{name:'Helium',symbol:'He',z:2,shell:[2]},{name:'Neon',symbol:'Ne',z:10,shell:[2,8]},{name:'Argon',symbol:'Ar',z:18,shell:[2,8,8]},{name:'Krypton',symbol:'Kr',z:36,shell:[2,8,18,8]},{name:'Xenon',symbol:'Xe',z:54,shell:[2,8,18,18,8]},{name:'Radon',symbol:'Rn',z:86,shell:[2,8,18,32,18,8]},{name:'Oganesson',symbol:'Og',z:118,shell:[2,8,18,32,32,18,8]}];
+const increments=gases.map((g,i)=>g.z-(i?gases[i-1].z:0));
+const expected=[2,8,8,18,18,32,32];
+const fib=[1,1];while(fib.length<12)fib.push(fib.at(-1)+fib.at(-2));
+const tests=[gases.every(g=>g.shell.reduce((a,b)=>a+b,0)===g.z),JSON.stringify(increments)===JSON.stringify(expected),[1,2,3,4].every(n=>2*n*n===expected[[0,1,3,5][n-1]]),60/20===3,fib.includes(2)&&fib.includes(8)&&!fib.includes(18)&&!fib.includes(32)];
+document.getElementById('status').textContent=tests.every(Boolean)?'✓ Five local invariants verified':'✕ Invariant failure: inspect model';
+document.getElementById('quadratic').textContent=Array.from({length:6},(_,i)=>2*(i+1)**2).join(' · ');
+document.getElementById('fib').textContent=fib.join(' · ');
+document.getElementById('ledger').innerHTML=gases.map((g,i)=>'<tr><td>'+g.symbol+'</td><td>'+g.z+'</td><td>+'+increments[i]+'</td></tr>').join('');
+const canvas=document.getElementById('view'),ctx=canvas.getContext('2d');let current=5;
+function render(){const g=gases[current],W=canvas.width,H=canvas.height,cx=W/2,cy=H/2;ctx.clearRect(0,0,W,H);
+const radius=33,step=36,maxR=radius+step*g.shell.length;
+for(let s=g.shell.length-1;s>=0;s--){let r=radius+step*(s+1);ctx.strokeStyle=s===g.shell.length-1?'#47f5d5':'#416991';ctx.lineWidth=s===g.shell.length-1?3:1.5;ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.stroke();
+const count=g.shell[s];for(let j=0;j<count;j++){let a=2*Math.PI*j/count-Math.PI/2,rr=3;ctx.fillStyle=s===g.shell.length-1?'#70ffe6':'#b5a1ff';ctx.beginPath();ctx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),rr,0,2*Math.PI);ctx.fill();}}
+ctx.fillStyle='#ffbb74';ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.fill();ctx.fillStyle='#0d1321';ctx.font='bold 20px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.symbol,cx,cy);
+ctx.fillStyle='#c1daef';ctx.font='17px ui-monospace,monospace';ctx.fillText('shells: '+g.shell.join(' / '),cx,H-24);
+document.getElementById('detail').textContent=g.name+' · Z='+g.z+' · closed-shell reference';
+document.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===current)));}
+gases.forEach((g,i)=>{let b=document.createElement('button');b.textContent=g.symbol;b.onclick=()=>{current=i;render()};document.getElementById('buttons').append(b)});render();
+</script></body></html>
