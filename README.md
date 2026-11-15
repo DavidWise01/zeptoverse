@@ -155,3 +155,10 @@ Project artwork convention: create one fresh narrative JPG and an offline, self-
 [Open interactive Canvas2D manifold](void-gravity-foam.html). Three adjustable terms depict a gravitational depression, an underdensity-associated rise, and a short-wavelength ripple. The scalar height function is purely illustrative and does not solve Einstein's equations. Neither cosmic voids nor Planck foam can be inferred from literal dents in a 2D sheet. A companion self-contained JPG-embedded HTML illustration was delivered in the conversation; the repository's page contains its own interactive canvas, not that JPG binary.
 
 The base-60 zeptometer-to-Planck gap is log_60(10^-21 / (1.616255e-35)) ≈ 7.76 generations. Sub-Planck divisions are mathematical extrapolations rather than measured cells.
+
+
+## NCI-011 — Triadic Engine
+
+[Open the NCI-011 HTML experiment](triadic-engine.html). A visual, normalized-budget model couples three **distinct analogies**, not a confirmed unified physical process: Casimir boundary effects, Kelvin/Peltier/Seebeck thermoelectric transfer, and Newtonian mechanical response. Three proposed semantic operators are **diatomic** (couple), **diodic** (directional gating), and **divisive** (conservative partition). The interactive sliders demonstrate strict allocation of a toy input budget into output, stored, and remaining/loss quantities. The separate high-definition JPG-embedded standalone HTML is delivered as a conversation artifact; the GitHub version includes a vector diagram rather than the image binary.
+
+Physical notes: the Casimir effect involves quantum electromagnetic boundary conditions; Kelvin relations connect Seebeck, Peltier, and Thomson coefficients; a candle-powered thermoelectric generator relies on a temperature difference and the Seebeck effect, whereas Peltier pumping consumes electric work. Newton's law models classical mechanical response. Planck-scale spacetime foam remains hypothetical. The shared 60/20/3/3/1/1 notation is model metadata, not experimentally demonstrated physics.
