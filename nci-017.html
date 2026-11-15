@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-017 · History-Dependent Selection Kernel</title><style>:root{color-scheme:dark;background:#07101d;color:#eafaff;font:16px system-ui}body{max-width:1120px;margin:auto;padding:24px}h1{color:#80ffe0}p{line-height:1.55;color:#bacfdf}section{padding:18px;background:#122039;border:1px solid #355877;border-radius:16px;margin:14px 0}button{background:#14576a;border:1px solid #55a6b1;color:white;padding:10px 14px;border-radius:10px;margin:4px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#9be5f1}a{color:#73f5d8}.muted{color:#eac18b}</style></head><body>
+<p>DAVIDWISE01 / ZEPTOVERSE / EXECUTABLE NCI-017</p><h1>Same Lattice. Different Memory. Different Choice.</h1>
+<p>This page runs the actual two-layer learning kernel. It starts with an identical microscopic lattice in two worlds, then adds a simulated failure observation to one world's policy ledger. The physical proton arrangement does not change.</p>
+<section><h2>History-conditioned decision</h2><button id="mark">Record simulated failed choice</button><button id="run">Execute selected cycle</button><button id="undo">Reverse last executed cycle</button><button id="reset">Reset</button>
+<p id="result"></p><pre id="diagram">PHYSICAL STATE ───────────────────┐
+  World 0: same bond directions   │
+  World 1: same bond directions   │
+POLICY MEMORY ────────────────────┘
+  World 0: untried → first choice
+  World 1: earlier failure → alternate choice</pre></section>
+<section><h2>Candidate ranking and policy</h2><pre id="ranking"></pre></section>
+<section><h2>Independent physical state + learning evidence</h2><pre id="ledger"></pre></section>
+<section><h2>Invariants</h2><pre id="checks"></pre><p class="muted">The failure observation is injected by the operator for this experiment; it is not a measured chemical experiment. This model is a deterministic graph learner, not evidence for cognition in ice, or a real Ice IX crystal lattice.</p><p><a href="./kernel/nci-017-kernel.mjs">Executable kernel source</a> · <a href="./kernel/nci-017.test.mjs">Node test suite</a></p></section>
+<script type="module">
+import {genesis,evidence,select,act,inverse,choices,validateWorld,microscopicSignature} from "./kernel/nci-017-kernel.mjs";
+import {protonLedger} from "./kernel/nci-015-kernel.mjs";
+const $=id=>document.getElementById(id);let world=genesis(),last=null;
+function show(message){
+ const c=choices(world),b=protonLedger(world.physical);
+ $("result").textContent=message;
+ $("ranking").textContent=c.map((x,i)=>String(i+1)+". "+x.key+" | score "+x.score+" | failed "+x.failures+" | successful "+x.successes).join("\n")||"No legal cycles";
+ $("ledger").textContent="Microscopic state: "+microscopicSignature(world.physical)+"\nPolicy events:\n"+(world.policy.events.map(e=>e.seq+" "+e.type+" "+(e.outcome||e.result||"")+" "+e.action).join("\n")||"none");
+ $("checks").textContent="4-neighbor ice rule: "+b.iceRule.valid+"\nHistory sequence valid: "+validateWorld(world)+"\nPolicy events: "+world.policy.sequence+"\nNext choice: "+(select(world)?.key??"none");
+}
+$("mark").onclick=()=>{const choice=select(world);if(!choice)return show("No legal candidate");world=evidence(world,choice.path,"failure","simulated prior failure");show("Memory updated; microscopic state unchanged")};
+$("run").onclick=()=>{const selected=select(world);if(!selected)return show("No legal candidate");let r=act(world);world=r.world;if(r.accepted)last=selected.path;show("Physical loop executed: "+r.reason)};
+$("undo").onclick=()=>{if(!last)return show("No executed cycle to reverse");world=inverse(world,last);last=null;show("Physical orientation restored; learning history retained")};
+$("reset").onclick=()=>{world=genesis();last=null;show("New genesis")};show("Ready");
+</script></body></html>
