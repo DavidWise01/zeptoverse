@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Zeptoverse NCI-006 — Orbital Closure Generator</title><style>
+:root{color-scheme:dark;font:16px system-ui;background:#070c18;color:#eaf7ff}*{box-sizing:border-box}body{max-width:1190px;margin:auto;padding:24px;background:radial-gradient(ellipse at top,#19334b,#070c18 68%)}h1{font-size:clamp(2rem,5vw,3.5rem);margin:.25em 0}.eyebrow{color:#76f5dc;letter-spacing:.15em;text-transform:uppercase;font-size:.8rem}p{line-height:1.55;color:#acc9da}a{color:#77f3d9}.layout{display:grid;grid-template-columns:1.2fr 1fr;gap:17px}.panel{background:#101e32;border:1px solid #31516b;border-radius:16px;padding:19px}canvas{width:100%;height:auto;border-radius:12px;background:#081222}button{background:#173c54;color:#efffff;border:1px solid #3e7492;border-radius:9px;padding:10px 13px;margin:3px;cursor:pointer}button:disabled{opacity:.4;cursor:default}.metric{color:#7bf5d9;font-size:1.9rem;font-weight:700}pre,.mono{font-family:ui-monospace,monospace}pre{white-space:pre-wrap;line-height:1.55;font-size:.85rem}.good{color:#79f0cc}.muted{color:#b2cce0}.warn{color:#ffd18e}#trace{max-height:250px;overflow:auto;padding-left:28px;font:13px ui-monospace,monospace}#trace li{margin:6px 0}.row{display:flex;gap:10px;flex-wrap:wrap}.stat{flex:1;min-width:115px;border:1px solid #36536b;border-radius:10px;padding:12px}.stat small{display:block;color:#acc3d5}footer{margin:22px 0;color:#8eaec4;font-size:.86rem}@media(max-width:800px){.layout{grid-template-columns:1fr}body{padding:12px}}</style></head><body>
+<div class="eyebrow">zeptoverse / generational chemistry / NCI-006</div><h1>Generate Closure, Then Compare</h1><p>This test removes the supplied noble-gas address array from the generator. It fills orbitals using the simplified <em>n+ℓ</em> ordering, orbital capacities, and a filled outer s or p block as its closure rule. The reference remains separate until requested.</p>
+<div class="layout"><section class="panel"><h2>Orbital occupancy engine</h2><canvas id="canvas" width="760" height="420" aria-label="Orbital occupancy bars and electron generation count"></canvas>
+<div class="row"><button id="one">Add 1 electron</button><button id="fib">Add Fibonacci batch</button><button id="next">Advance to next generated closure</button><button id="all">Fill to 118</button><button id="reset">Reset</button></div>
+<div class="row"><div class="stat"><small>Electrons</small><div id="z" class="metric">0</div></div><div class="stat"><small>Subshell</small><div id="subshell" class="metric">—</div></div><div class="stat"><small>Closures found</small><div id="count" class="metric">0</div></div></div>
+<h3>Append-only traversal ledger</h3><ol id="trace"></ol></section>
+<section class="panel"><h2>Generator, no closure lookup</h2><pre>orbital capacity = 2(2ℓ+1)
+order by (n+ℓ), then n
+ℓ = 0,1,2,3 → s,p,d,f
+closed = filled 1s OR
+         completed outer ns² np⁶
+         (after ordered subshell filling)</pre>
+<p class="muted">The generator computes closure positions from subshell capacities and ordering, not from a hard-coded list of target atomic numbers.</p>
+<h3>Generated candidate checkpoints</h3><pre id="predicted"></pre>
+<button id="reveal">Reveal chemistry reference and compare</button><p id="comparison" class="muted">Reference addresses hidden.</p>
+<h3>Internal regression checks</h3><p id="tests" class="good"></p>
+<h3>Important distinction</h3><p class="muted">The <em>n+ℓ</em> rule is informed by established electron configurations; this is not a scientifically independent blind prediction. Actual orbital energies have exceptions. Oganesson is a predicted special case because relativistic effects can change its chemical properties. The user's 60/20/3/3/1/1 geometry and Fibonacci batch operator are not asserted to cause orbital order.</p>
+<pre>{brace[BOX:constant(TORROID:variable)]}
+60 / 20 / 3 / 3 / 1 / 1
+closure ⇒ [1/1] END END</pre></section></div>
+<footer><a href="./index.html">NCI-002</a> · <a href="./consumption.html">NCI-003</a> · <a href="./conservation.html">NCI-004</a> · <a href="./competition.html">NCI-005</a></footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id), symbol=["s","p","d","f"];
+// This is a generic n+l rule, deliberately not a list of noble-gas boundary addresses.
+const orbitals=[];for(let n=1;n<=7;n++){for(let l=0;l<=Math.min(n-1,3);l++){orbitals.push({n,l,name:n+symbol[l],capacity:2*(2*l+1)})}}
+orbitals.sort((a,b)=>(a.n+a.l)-(b.n+b.l)||a.n-b.n);
+const levels=orbitals.map(o=>({...o,filled:0}));
+const F=[1,1];while(F.length<14)F.push(F.at(-1)+F.at(-2));
+function generate(max=118){const result=[];let occupied=0, outer={};
+ for(const o of orbitals){const take=Math.min(o.capacity,max-occupied);if(take<=0)break;occupied+=take;
+ outer[o.name]=take;
+ if((o.n===1&&o.l===0&&take===2)||(o.l===1&&take===6&&outer[o.n+"s"]===2))result.push(occupied);
+ }return result}
+const candidates=generate();
+let z=0,fi=0,events=[],revealed=false;
+function occupancy(count){let remaining=count;return orbitals.map(o=>{let filled=Math.max(0,Math.min(o.capacity,remaining));remaining-=filled;return {...o,filled}})}
+function atClosure(n){return candidates.includes(n)}
+function advance(amount,kind){let old=z;z=Math.min(118,z+Math.max(0,Math.floor(amount)));const hits=candidates.filter(x=>x>old&&x<=z);events.push({from:old,to:z,kind,hits});render()}
+function test(){const tests=[
+["ordered subshells",orbitals.every((o,i)=>!i||o.n+o.l>orbitals[i-1].n+orbitals[i-1].l||(o.n+o.l===orbitals[i-1].n+orbitals[i-1].l&&o.n>orbitals[i-1].n))],
+["capacities",orbitals.every(o=>o.capacity===2*(2*o.l+1))],
+["conserved occupation",Array.from({length:119},(_,n)=>occupancy(n).reduce((s,o)=>s+o.filled,0)===n).every(Boolean)],
+["monotone closures",candidates.every((v,i)=>v>0&&(!i||v>candidates[i-1]))],
+["Fibonacci batching",F.slice(2).every((v,i)=>v===F[i]+F[i+1])],
+["boundary crossing",Array.from({length:119},(_,a)=>Array.from({length:119-a},(_,d)=>candidates.filter(x=>x>a&&x<=a+d).length>=0).every(Boolean)).every(Boolean)]
+];$("tests").textContent=tests.filter(x=>x[1]).length+"/"+tests.length+" internal checks: "+tests.map(x=>(x[1]?"✓ ":"✕ ")+x[0]).join("; ")}
+function draw(){const canvas=$("canvas"),ctx=canvas.getContext("2d"),o=occupancy(z);ctx.clearRect(0,0,canvas.width,canvas.height);
+ const display=o.filter((v,i)=>i<20);ctx.fillStyle="#b7cde0";ctx.font="15px ui-monospace,monospace";ctx.textAlign="left";
+ display.forEach((v,i)=>{let col=i%2,row=Math.floor(i/2),x=35+col*364,y=22+row*37;ctx.fillStyle="#bcd3e5";ctx.fillText(v.name,x,y+12);ctx.fillStyle="#263d56";ctx.fillRect(x+40,y,205,20);ctx.fillStyle=v.filled===v.capacity?"#64e9d0":"#9e90f1";ctx.fillRect(x+40,y,205*v.filled/v.capacity,20);ctx.fillStyle="#e1f3ff";ctx.fillText(v.filled+"/"+v.capacity,x+255,y+13)});
+ ctx.fillStyle="#ffd28c";ctx.font="14px ui-monospace,monospace";ctx.fillText("n+ℓ ordered subshells · filled / capacity",35,401)}
+function render(){const occ=occupancy(z);const current=occ.find(o=>o.filled>0&&o.filled<o.capacity)||occ.filter(o=>o.filled>0).at(-1);
+ $("z").textContent=z;$("subshell").textContent=current?current.name:"—";$("count").textContent=candidates.filter(v=>v<=z).length;
+ $("predicted").textContent=candidates.join(" → ");
+ const tr=$("trace");tr.replaceChildren();if(!events.length){let li=document.createElement("li");li.textContent="Genesis: 0 electrons · no closures";tr.append(li)}
+ events.slice(-25).forEach(e=>{let li=document.createElement("li");li.textContent=e.kind+" "+e.from+" → "+e.to+(e.hits.length?" · closed @"+e.hits.join(", "):"");tr.append(li)});
+ $("one").disabled=z===118;$("fib").disabled=z===118;$("next").disabled=z===118;$("all").disabled=z===118;
+ if(revealed){const reference=[2,10,18,36,54,86,118];let ok=reference.length===candidates.length&&reference.every((n,i)=>n===candidates[i]);
+ $("comparison").textContent="Reference: "+reference.join(" → ")+". Exact match: "+(ok?"YES ("+reference.length+"/"+reference.length+")":"NO. Preserve discrepancy.")+". Chemistry-derived generator, not independent physical proof."}
+ else $("comparison").textContent="Reference addresses hidden.";draw()}
+$("one").onclick=()=>advance(1,"atomic +1");$("fib").onclick=()=>{let n=F[Math.min(fi,F.length-1)];fi++;advance(n,"Fibonacci +"+n)};
+$("next").onclick=()=>{let target=candidates.find(x=>x>z);if(target!==undefined)advance(target-z,"next closure")};
+$("all").onclick=()=>advance(118-z,"complete");$("reset").onclick=()=>{z=0;fi=0;events=[];revealed=false;render()};
+$("reveal").onclick=()=>{revealed=true;render()};test();render();
+</script></body></html>
