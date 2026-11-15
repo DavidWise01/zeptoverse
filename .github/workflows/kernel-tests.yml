@@ -31,3 +31,5 @@ jobs:
         run: node kernel/nci-017.test.mjs
       - name: NCI-018 bounded policy adaptation and conserved trials
         run: node kernel/nci-018.test.mjs
+      - name: NCI-019 structural transfer and shared-root de-duplication
+        run: node kernel/nci-019.test.mjs
