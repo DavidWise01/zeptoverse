@@ -29,3 +29,5 @@ jobs:
         run: node kernel/nci-016.test.mjs
       - name: NCI-017 policy-memory and physical-state separation
         run: node kernel/nci-017.test.mjs
+      - name: NCI-018 bounded policy adaptation and conserved trials
+        run: node kernel/nci-018.test.mjs
