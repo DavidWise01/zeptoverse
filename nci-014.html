@@ -1,0 +1,34 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-014 · Recursive Diodic Kernel</title><style>
+:root{color-scheme:dark;background:#07101c;color:#e7faff;font:16px ui-monospace,Consolas,monospace}body{max-width:1080px;margin:auto;padding:24px}h1{font-size:clamp(1.7rem,4vw,3rem);color:#83ffe5}p{line-height:1.6;color:#b5cddd}section{border:1px solid #336178;border-radius:13px;background:#101f32;padding:16px;margin:14px 0}button{background:#174858;border:1px solid #4c929a;color:white;padding:10px 14px;border-radius:10px;cursor:pointer;margin:4px}button:disabled{opacity:.5}pre{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;color:#b3d9fb}a{color:#7df0d6}.warn{color:#ffe1a2}</style></head><body>
+<p>DAVIDWISE01 / ZEPTOVERSE / EXECUTABLE KERNEL</p>
+<h1>NCI-014 · Recursive Death-Roll Selection</h1><p>This page imports the actual NCI-014 kernel module. It is not an animation pretending to be a kernel. Every click executes a deterministic state transition and prints an evidence ledger.</p>
+<section><h2>Five-site 4-regular graph</h2><pre>       B ------- C
+       | \     / |
+       |   \ /   |
+       A--- E ---D
+      (K5 mathematical demonstration)
+Each site: degree 4, 2 in + 2 out
+A ▷ B → C0001 ▷ C → C0002 → ...
+</pre><p class="warn">The graph is a deliberately simplified ice-rule analogy, not a crystallographic model of ice IX.</p><button id="step">Select and capture one</button><button id="complete">Recursive run to closure</button><button id="block">Test capacity rejection</button><button id="reset">Reset</button><p id="result" aria-live="polite"></p></section>
+<section><h2>Current state</h2><pre id="state"></pre></section>
+<section><h2>Append-only event ledger</h2><pre id="ledger"></pre></section>
+<section><h2>Kernel invariants</h2><pre id="checks"></pre><p><a href="./kernel/nci-014-kernel.mjs">Source module</a> · <a href="./kernel/nci-014.test.mjs">Executable Node tests</a></p></section>
+<script type="module">
+import {makeDemo,selectAndCapture,iterate,attempt} from "./kernel/nci-014-kernel.mjs";
+import {validate,iceRule} from "./kernel/nci-013-kernel.mjs";
+let current=makeDemo(),anchor="A";
+const $=id=>document.getElementById(id);
+function show(message){const node=current.nodes[anchor];
+ $("result").textContent=message;
+ $("state").textContent=JSON.stringify({anchor,active:current.active,composite:node?{label:node.label,roots:node.roots,units:node.units}:null},null,2);
+ $("ledger").textContent=current.events.length?current.events.map(e=>e.seq+" "+e.type+" "+JSON.stringify(e.payload)).join("\n"):"Genesis: no transitions.";
+ let ice=iceRule(current,Object.keys(current.inventory));
+ $("checks").textContent="Lineage and units conserved: "+validate(current)+"\nMicroscopic ice-rule sites valid: "+Object.values(ice).every(v=>v.valid)+"\nOriginal sites retained: "+Object.keys(current.inventory).join(", ")+"\nTerminal composite: "+(current.active.length===1?"1/1 END END":"open");
+ $("step").disabled=current.active.length===1;$("complete").disabled=current.active.length===1;
+}
+$("step").onclick=()=>{let r=selectAndCapture(current,anchor);current=r.state;if(r.accepted)anchor=r.label;show(r.accepted?"Accepted "+r.label:r.reason)};
+$("complete").onclick=()=>{let r=iterate(current,anchor,{maxSteps:100});current=r.state;anchor=r.anchor;show("Steps="+r.steps+" / "+r.stop)};
+$("block").onclick=()=>{const candidate=current.active.find(x=>x!==anchor);if(!candidate){show("No remaining neighbor");return}let r=attempt(current,anchor,candidate,{maxUnits:1});current=r.state;show("Preserved rejection: "+r.reason)};
+$("reset").onclick=()=>{current=makeDemo();anchor="A";show("Reset to immutable genesis")};
+show("Ready: kernel imported");
+</script></body></html>
