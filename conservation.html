@@ -45,7 +45,7 @@ function test(){const checks=[
 ['conservation',state.a+state.b+state.pool===TOTAL],
 ['nonnegative',[state.a,state.b,state.pool].every(x=>Number.isInteger(x)&&x>=0)],
 ['fixed budget',events.every(e=>e.after.a+e.after.b+e.after.pool===TOTAL)],
-['quadratic recurrence',lengths.every((x,i)=>x===2*(i===0?1:Math.floor((i+2)/2))**2)],
+['quadratic recurrence',lengths.every((x,i)=>x===2*(i===0?1:Math.floor((i+1)/2)+1)**2)],
 ['generated boundaries',candidates.at(-1)===118],
 ['Fibonacci recurrence',fib.slice(2).every((x,i)=>x===fib[i]+fib[i+1])]
 ];get('tests').textContent='In-browser assertions: '+checks.filter(x=>x[1]).length+'/'+checks.length+' passed'+(checks.every(x=>x[1])?' ✓':' ✕')}
