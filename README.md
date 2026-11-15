@@ -61,3 +61,22 @@ Run [conservation.html](conservation.html) for two variable-cube reservoirs and 
 A separate candidate generator constructs `[2,8,8,18,18,32,32]` using `2n²` with the larger lengths repeated; it then cumulatively predicts `[2,10,18,36,54,86,118]`. The browser hides reference labels until the operator chooses comparison. **This is not a genuinely independent blind prediction**: the rule itself is motivated by known periodic-table patterns. Its usefulness is as a regression test and precursor to held-out predictions, not proof of a new physical law. The app tests six programmatic invariants.
 
 `1/1 END END` is the proposed completed-generation identity. Reservoir tokens are modeling addresses, **not conserved physical electron numbers during nuclear transmutation**; chemical elements are defined by proton count and actual synthesis requires nuclear physics.
+
+
+## NCI-005 — Two-cube generational competition
+
+[Open the NCI-005 Canvas2D laboratory](competition.html).
+
+Two abstract populations (A and B) compete for a shared finite pool. The rule set has four bookkeeping quantities:
+
+- \`occupied(A)\` and \`occupied(B)\`: consumed structural address tokens.
+- \`pool\`: unallocated resource units.
+- \`spent\`: resources paid for closure events.
+
+**Conservation:** \`occupied(A) + occupied(B) + pool + spent = initial_budget\`.
+
+At each discrete round, the two populations request units at user-selected rates. Alternating turn order avoids permanently prioritizing A or B. A node cannot pass its next reference closure address \`[2,10,18,36,54,86,118]\`. When it reaches a boundary, it becomes pending, and the specified closure cost is paid from the pool before the checkpoint is sealed and growth resumes. A node may remain pending indefinitely if the pool is exhausted. The browser allows one round, ten rounds, or run-until-stalled and includes five deterministic counterexample scenarios. Changing parameters resets the ledger to maintain reproducibility.
+
+An optional Fibonacci schedule multiplies per-round *requested demand*, not chemical shell capacity. The finite-pool, token-cost, and competition rules are a **toy generational model**, not chemical binding-energy estimates, nuclear transmutation, or measured noble-gas thermodynamics. The known chemical closures serve as provided address targets, so reaching them is not predictive confirmation.
+
+**NCI-006 candidate:** Remove the supplied closure-address lookup, derive boundaries from a separately specified occupancy rule, and compare predictions on a withheld sequence without modifying the recurrence after inspection.
