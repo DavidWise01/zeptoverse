@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-015 · Proton-Rule Kernel</title>
+<style>:root{color-scheme:dark;font:16px system-ui;background:#07101b;color:#eaf9ff}body{max-width:1050px;margin:auto;padding:24px}h1{color:#7bf3df}p{line-height:1.5;color:#b7cbdc}section{background:#122137;border:1px solid #325677;border-radius:16px;padding:18px;margin:14px 0}button{background:#195268;border:1px solid #4c96a6;color:white;border-radius:10px;padding:10px 13px;margin:4px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b1e6f5}a{color:#75f3d8}.notice{color:#ffcb80}</style></head><body><p>ZEPTOVERSE / EXECUTABLE PHYSICAL-FIDELITY GATE</p><h1>NCI-015 · Proton Rules & Legal Loops</h1><p>The kernel now distinguishes a lineage-grouping operation from a microscopic proton rearrangement. Each bond carries exactly one donor assignment; every four-coordinated site requires two donated and two accepted bonds.</p>
+<section><h2>Ice-rule surrogate</h2><pre>Five-site K5 graph · each site degree 4
+10 edges → exactly 10 assigned bond protons
+Every vertex: 2 outward (donated), 2 inward (accepted)
+
+Single bond flip: REJECT (creates 3/1 and 1/3)
+Closed directed cycle: ACCEPT (preserves 2/2)
+Grouping nodes: allowed, but unchanged micro-bonds</pre><p class="notice">This graph is not the ice IX lattice. Real ice IX is tetragonal with P4₁2₁2 symmetry; crystallographic atom coordinates are not supplied in this experiment.</p>
+<button id="flip">Attempt forbidden one-bond flip</button><button id="loop">Reverse first legal directed loop</button><button id="many">Iterate 12 cycles</button><button id="reset">Reset</button><p id="summary"></p></section>
+<section><h2>Explicit donor → acceptor assignments</h2><pre id="bonds"></pre></section>
+<section><h2>Append-only witness ledger</h2><pre id="events"></pre></section>
+<section><h2>Tests and source</h2><p><a href="./kernel/nci-015-kernel.mjs">Kernel module</a> · <a href="./kernel/nci-015.test.mjs">Automated tests</a> · <a href="./nci-014.html">Earlier accretion kernel</a></p><p>Evidence: <a href="https://doi.org/10.1063/5.0032485">Ice III / IX ordering study</a> · <a href="https://www.rsc.org/suppdata/d0/nj/d0nj04687f/d0nj04687f1.pdf">Ice IX crystal geometry reference</a>.</p></section>
+<script type="module">
+import {demo,protonLedger,reverseBond,findDirectedCycles,reverseCycle,evolve} from "./kernel/nci-015-kernel.mjs";
+let s=demo();const $=id=>document.getElementById(id);
+function render(label){const led=protonLedger(s);
+ $("summary").textContent=label+" | ice rule: "+(led.iceRule.valid?"PASS":"FAIL")+" | bond protons: "+led.numberOfBondProtons+" | cycles available: "+findDirectedCycles(s).length;
+ $("bonds").textContent=led.protons.map(e=>e.donor+" → "+e.acceptor+"   ("+e.edge+")").join("\n");
+ $("events").textContent=s.events.length?s.events.map(e=>e.seq+": "+e.type+" "+JSON.stringify(e.payload)).join("\n"):"Genesis: ordered surrogate network";}
+$("flip").onclick=()=>{let b=protonLedger(s).protons[0],r=reverseBond(s,b.donor,b.acceptor);s=r.state;render("Single flip "+r.reason)};
+$("loop").onclick=()=>{const cycles=findDirectedCycles(s);if(!cycles.length)return render("No directed triangle");const r=reverseCycle(s,cycles[0]);s=r.state;render("Cycle "+r.reason)};
+$("many").onclick=()=>{const r=evolve(s,12);s=r.state;render(r.accepted+" legal cycles")};
+$("reset").onclick=()=>{s=demo();render("Reset")};render("Ready");
+</script></body></html>
