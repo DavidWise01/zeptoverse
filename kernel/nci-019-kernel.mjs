@@ -49,7 +49,9 @@ export function transfer(sourceWorld,targetWorld,{sourceId="NCI-019-SOURCE-1"}={
  const oldSignature=microscopicSignature(sourceWorld.physical);
  let target=copy(targetWorld),imported=0,duplicates=0;
  for(const old of sourceWorld.policy.events.filter(e=>e.type==="POLICY_FEEDBACK"&&e.at===oldSignature)){
-  const translated=old.action.split(">").map(node=>mapping[node]);
+  const raw=old.action.split(">").map(node=>mapping[node]);
+  const pivot=raw.indexOf([...raw].sort()[0]);
+  const translated=[...raw.slice(pivot),...raw.slice(0,pivot)];
   rule(translated.every(x=>x),"lost origin mapping");
   const fingerprint=sourceId+"#"+old.seq;
   if(target.policy.events.some(e=>e.evidenceRoot===fingerprint)){duplicates++;continue}
