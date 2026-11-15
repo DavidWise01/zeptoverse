@@ -25,3 +25,5 @@ jobs:
         run: node kernel/nci-014.test.mjs
       - name: NCI-015 proton-network and loop invariants
         run: node kernel/nci-015.test.mjs
+      - name: NCI-016 reversible state and memory invariants
+        run: node kernel/nci-016.test.mjs
