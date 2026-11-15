@@ -256,3 +256,19 @@ Checksums use **FNV-1a 32-bit** solely to detect accidental state mismatch; coll
 The model still uses the five-site **K5 surrogate**, not physical Ice IX coordinates. The algorithm demonstrates reversible graph transformations and permanent computational history, not laboratory-reversible thermodynamics or evidence that spacetime is elastic memory foam.
 
 Test with `node kernel/nci-016.test.mjs`. GitHub CI runs the test on changes to the kernel.
+
+## NCI-017 — Identical physical state, different learning history
+
+[Interactive runnable laboratory](nci-017.html) · [Source](kernel/nci-017-kernel.mjs) · [Test suite](kernel/nci-017.test.mjs)
+
+**Separate two state layers:**
+- Physical state: original microscopic graph, directed proton bonds, and conservation/ice-rule checks from NCI-015.
+- Policy state: ordered, append-only *simulated observations* about attempted choices. A policy observation does not change microscopic orientation.
+
+`evidence` records the outcome of a previously selectable directed-cycle action; `choices` ranks available cycles deterministically using `score=successes-2×failures` and lexicographic ties; `act` performs the selected legal directed-cycle reversal; `inverse` restores the microscopic configuration while preserving all policy evidence; `validateWorld` checks local ice rules and contiguous policy event sequence.
+
+**Core test:** Worlds `W0` and `W1` have byte-for-byte identical physical state. Adding simulated failure feedback to `W1.policy` changes the preferred action, while keeping `W1.physical===W0.physical` structurally. This demonstrates *path-dependent decision policy*, not physical time hysteresis.
+
+**Important limitations:** Feedback is deliberately synthetic in the initial test, not observed experimental Ice IX behavior. The bond topology is still the K5 surrogate, not crystallographic Ice IX. The policy ledger is append-only by returned-state convention but not cryptographically tamper-proof. No self-learning is inferred from the geometry itself.
+
+Node test: `node kernel/nci-017.test.mjs`; committed workflow includes NCI-017.
