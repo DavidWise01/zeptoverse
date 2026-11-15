@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NCI-019 — Transferable Lattice Learning</title><style>:root{color-scheme:dark;background:#08101d;color:#eafaff;font:16px system-ui}body{max-width:1120px;padding:24px;margin:auto}h1{color:#84f8e3}p{line-height:1.55;color:#bad1df}section{padding:18px;border-radius:15px;border:1px solid #325875;background:#102137;margin:16px 0}button{background:#164e66;color:white;border:1px solid #519ba7;border-radius:9px;padding:10px 14px;cursor:pointer;margin:4px}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b5e5f3}a{color:#78f3d9}.warn{color:#ffce8c}</style></head><body>
+<p>ZEPTOVERSE / NCI-019 / EXECUTABLE KERNEL</p><h1>Transferable Learning · Witness-Preserving Graph Isomorphism</h1>
+<p>Two lattices can be structurally identical even when every site has a different name. NCI-019 discovers a bounded, strict directed-graph isomorphism, maps prior feedback onto the corresponding cycle, and retains its original witness root.</p>
+<section><h2>Source vs target</h2><pre>SOURCE:    A B C D E    ── directional arrows ──┐
+                                               ├─ structural map ──▶ POLICY TRANSFER
+TARGET:    P Q R S T    ── same directed graph ─┘
+                                    │
+                       original source ancestry retained
+                       one imported packet ≠ new independent witness</pre>
+<button id="observe">Record a synthetic source failure</button><button id="transfer">Transfer to relabeled lattice</button><button id="again">Attempt identical import again</button><button id="reset">Reset experiment</button><p id="status"></p></section>
+<section><h2>Structural mapping and policy ranking</h2><pre id="mapping"></pre></section>
+<section><h2>Conservation and evidence lineage</h2><pre id="evidence"></pre></section>
+<section><h2>Limitations</h2><p class="warn">Strict isomorphism is a matching criterion, not a claim that real materials transfer a learning policy. This is the same 5-site ice-rule surrogate, not crystallographic Ice IX. Source observations are synthetic and copied evidence is not independent corroboration.</p><p><a href="./kernel/nci-019-kernel.mjs">NCI-019 executable source</a> · <a href="./kernel/nci-019.test.mjs">Node assertions</a> · <a href="./nci-018.html">Previous self-correction stage</a></p></section>
+<script type="module">
+import {genesis,evidence,select,choices,microscopicSignature} from "./kernel/nci-017-kernel.mjs";
+import {renameSurrogate,findMapping,transfer,checkTransfer} from "./kernel/nci-019-kernel.mjs";
+import {protonLedger} from "./kernel/nci-015-kernel.mjs";
+const $=id=>document.getElementById(id);
+let source,target,first,transferred;
+function reset(){source=genesis();first=select(source);target=genesis(renameSurrogate(source.physical,{A:"P",B:"Q",C:"R",D:"S",E:"T"}));transferred=null;render("Ready: independent physical naming; common shape")}
+function render(status){$("status").textContent=status;const mapping=findMapping(source.physical,target.physical);
+ $("mapping").textContent="Verified mapping: "+JSON.stringify(mapping)+"\nSource next: "+(select(source)?.key??"none")+"\nTarget next: "+(select(target)?.key??"none")+"\nTarget ranked: \n"+choices(target).map(c=>c.key+" score="+c.score).join("\n");
+ $("evidence").textContent="Physical target unchanged: "+(microscopicSignature(target.physical)===target.origin)+"\nIce rule target: "+protonLedger(target.physical).iceRule.valid+"\nImported ancestry:\n"+(target.policy.events.map(e=>JSON.stringify({action:e.action,outcome:e.outcome,evidenceRoot:e.evidenceRoot,source:e.sourceAncestry,independent:e.independentWitness})).join("\n")||"none")+"\nWitness checks: "+checkTransfer(target);
+}
+$("observe").onclick=()=>{if(source.policy.events.length)return render("Source packet already recorded");source=evidence(source,first.path,"failure","synthetic training observation");render("Source failure packet preserved")};
+$("transfer").onclick=()=>{if(!source.policy.events.length)return render("Record source observation first");transferred=transfer(source,target,{sourceId:"SOURCE-ONE"});target=transferred.world;render("Transfer: "+transferred.reason+"; imported "+transferred.imported)};
+$("again").onclick=()=>{if(!source.policy.events.length)return render("Record source observation first");transferred=transfer(source,target,{sourceId:"SOURCE-ONE"});target=transferred.world;render("Duplicate check: "+transferred.duplicates+" already-derived packets")};
+$("reset").onclick=reset;reset();
+</script></body></html>
