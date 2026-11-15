@@ -137,3 +137,14 @@ Expected retrospective absolute errors (eV; approximate):
 The Fibonacci-weighted candidate improves aggregate MAE over the unweighted regression by approximately 0.188061 eV in this tiny retrospective set, but it loses on the Xe holdout and on Kr relative to persistence. It is **not validated as a general law**: three correlated cases are too few, and choices informed by prior known chemistry create model-selection bias. All errors are preserved, including unfavorable comparisons.
 
 **Technical note:** The in-browser frozen ledger is session-local and is not automatically persisted to GitHub. The protocol and the expected reference comparison are stored in the repository. NCI-009 should prioritize a new out-of-sample dataset and explicit source-independent verification instead of interpreting this tiny benchmark as physical discovery.
+
+
+## NCI-009 — Zeptometer to Planck scale
+
+[Open the GitHub scale chapter](planck-scale.html).
+
+At one zeptometer (10^-21 m) versus Planck length (approximately 1.616255 × 10^-35 m), the ratio is 6.187 × 10^13 (around 61.9 trillion), or 13.79 decimal orders, equivalent to about 7.76 successive divisions by 60.
+
+An illustrated JPG and a fully standalone, JPG-embedded HTML companion were generated in the conversation. The GitHub chapter currently contains an inline SVG scale visualization; the binary JPG has **not** been uploaded to GitHub. Keep mathematical lengths separate from claims of observed physical discreteness. This comparison does not establish a real "zeptoverse" realm or Planck-scale lattice.
+
+Project artwork convention: create one fresh narrative JPG and an offline, self-contained HTML with embedded JPG for each subsequent documented experiment.
