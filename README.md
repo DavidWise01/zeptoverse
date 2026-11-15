@@ -148,3 +148,10 @@ At one zeptometer (10^-21 m) versus Planck length (approximately 1.616255 × 10^
 An illustrated JPG and a fully standalone, JPG-embedded HTML companion were generated in the conversation. The GitHub chapter currently contains an inline SVG scale visualization; the binary JPG has **not** been uploaded to GitHub. Keep mathematical lengths separate from claims of observed physical discreteness. This comparison does not establish a real "zeptoverse" realm or Planck-scale lattice.
 
 Project artwork convention: create one fresh narrative JPG and an offline, self-contained HTML with embedded JPG for each subsequent documented experiment.
+
+
+## NCI-010 — Void, gravity and quantum-foam analogues
+
+[Open interactive Canvas2D manifold](void-gravity-foam.html). Three adjustable terms depict a gravitational depression, an underdensity-associated rise, and a short-wavelength ripple. The scalar height function is purely illustrative and does not solve Einstein's equations. Neither cosmic voids nor Planck foam can be inferred from literal dents in a 2D sheet. A companion self-contained JPG-embedded HTML illustration was delivered in the conversation; the repository's page contains its own interactive canvas, not that JPG binary.
+
+The base-60 zeptometer-to-Planck gap is log_60(10^-21 / (1.616255e-35)) ≈ 7.76 generations. Sub-Planck divisions are mathematical extrapolations rather than measured cells.
