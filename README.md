@@ -479,3 +479,18 @@ NCI-029 introduces operator-pinned certificate *issuer* keys in addition to NCI-
 **Executable fixtures:** separate issuer domains, deliberately shared domains, forged calibration field after signing, expired certificate, and disagreeing Kelvin readings. No private keys are committed; browser signing keys are ephemeral. This is not a true hardware attestation API. A future adapter would require manufacturer attestations, recognized anchors, calibration traceability, trusted wall-clock synchronization, independent measurement power/data plumbing, and a calibrated uncertainty model.
 
 The existing `.github/workflows/pages.yml` attempts deployment on push to `main`. This code commit alone does not demonstrate Pages deployment or CI success. Local regression command: `node kernel/nci-029.test.mjs` with Node 22+ and WebCrypto.
+
+## NCI-030 — Calibrated uncertainty intervals and ancestry-gated consensus
+
+[Full GitHub Pages lab](nci-030.html) · [Executable kernel](kernel/nci-030-kernel.mjs) · [Automated Node tests](kernel/nci-030.test.mjs).
+
+NCI-030 consumes already verified NCI-029 issuer-signed calibration certificates and device-signed observation packets. It treats the signed `uncertaintyK` as an **absolute symmetrical bound**, `reading ± uncertaintyK`, rather than interpreting it as one standard deviation, a calibrated coverage probability, or any independently validated measurement accuracy.
+
+- `intervals` calculates the three individual Kelvin intervals and their common intersection `[max(lower bounds), min(upper bounds)]`; no intersection means **INTERVAL_CONFLICT**.
+- Pairwise gap checks `|reading_i−reading_j| <= U_i+U_j` are included for audit, but the three-way common intersection is the actual consensus gate.
+- `classify` requires all three signed NCI-029 readings for the same event, valid calibration, separately declared issuer domains and device root ancestry, no reused upstream measurement identity, and clock agreement. It intentionally overrides NCI-029's fixed center-value tolerance with the new interval intersection.
+- `INTERVAL_COMPATIBLE` means the three readings' declared absolute bounds have a common temperature value; it is *not* a weighted estimate or independently proven statistical confidence level.
+- `checkpoint` appends the structured result and its intersection. All physical trust and `1/1 END END` seal flags stay false/null: independently authenticated physical sensors, calibration traceability, and secure provenance remain unverified.
+- Browser UI plots three uncertainty bands, common overlap, signed fixture credentials and the append-only gate history. Fixtures include compatible readings, conflict, shared issuer domain and expired certificates.
+
+Run `node kernel/nci-030.test.mjs` on Node 22 or newer. Committing the executable code is not evidence that CI completed or the Pages deployment is live.
