@@ -374,3 +374,30 @@ The `tick(seconds)` operation updates separate cold reservoir, hot reservoir and
 References: [MathWorks Peltier model](https://www.mathworks.com/help/simscape-electrical/ref/peltierdevice.html) and [Ferrotec thermoelectric equations](https://thermal.ferrotec.com/technology/thermoelectric-reference-guide/thermalRef11/).
 
 Run `node kernel/nci-023.test.mjs`. GitHub CI success requires verification.
+
+## NCI-024 — Finite heat reservoirs and homeostatic control
+
+[Runnable HTML](nci-024.html) · [Executable kernel](kernel/nci-024-kernel.mjs) · [Test suite](kernel/nci-024.test.mjs)
+
+Unlike fixed-`Tc`/`Th` NCI-023, this step gives both reservoirs finite constant heat capacities. For each short explicit-Euler step `dt` in seconds:
+
+```
+Tc' = Tc − Qc_dot dt / Cc
+Th' = Th + Qh_dot dt / Ch
+E_electrical' = E_electrical − P_electrical dt
+S_created = Cc ln(Tc'/Tc_initial) + Ch ln(Th'/Th_initial) >= 0
+E_total = Cc Tc + Ch Th + E_electrical + E_Casimir_triad = CONSTANT
+```
+
+`Qc_dot`, `Qh_dot`, and `P_electrical` reuse the Kelvin–Peltier + Joule + Fourier heat-leak formulas from NCI-023 with temperatures at the beginning of each short step. A negative-`Qc` step warms the cold reservoir (passive conductive leak). The step is refused if it violates positive-temperature, electrical budget, or entropy constraints.
+
+**Dimensionless control triad, distinct from kelvin:**
+- `−1` / **PUMP**: current applied if the cold reservoir is above the target band and energy is available.
+- `0` / **COAST**: electric current zero, thermal contact intact; passive conduction may warm the cold reservoir.
+- `+1` / **STOP**: current zero and an *idealized* thermal disconnect (`K=0`), with zero heat exchange.
+
+The controller uses a specified deadband, an upper hot-temperature cutoff and a finite electrical store. Every accepted step carries its controller decision, measured kernel outputs, and entropy change. Rejected steps preserve an append-only witness event and leave thermal/physical accounts unchanged.
+
+**Limits:** STOP assumes an ideal isolation switch, and constant thermal coefficients and capacities are approximations. Explicit-Euler time integration is suitable only for sufficiently small steps, which the kernel checks in part through thermodynamic invariants. This is not an experimental device, nor any demonstration of Planck foam or Ice IX quantum learning. Coupled Casimir boundaries are carried unchanged from NCI-022 and keep their independent internal conservation audit.
+
+Run: `node kernel/nci-024.test.mjs`. CI success and live GitHub Pages serving require separate verification.
