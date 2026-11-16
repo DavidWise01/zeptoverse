@@ -43,3 +43,5 @@ jobs:
         run: node kernel/nci-023.test.mjs
       - name: NCI-024 finite-reservoir homeostasis and reversible evidence
         run: node kernel/nci-024.test.mjs
+      - name: NCI-025 hysteretic prediction, policy memory and entropy
+        run: node kernel/nci-025.test.mjs
