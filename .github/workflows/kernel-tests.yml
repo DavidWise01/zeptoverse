@@ -59,3 +59,5 @@ jobs:
         run: node kernel/nci-031.test.mjs
       - name: NCI-032 CMB-reference ternary zepto-to-Planck physics scale checks
         run: node kernel/nci-032.test.mjs
+      - name: NCI-033 Dirichlet box and flat torus scalar eigenmode spectrum
+        run: node kernel/nci-033.test.mjs
