@@ -37,3 +37,5 @@ jobs:
         run: node kernel/nci-020.test.mjs
       - name: NCI-021 dimensioned Casimir energy and signed-boundary invariants
         run: node kernel/nci-021.test.mjs
+      - name: NCI-022 triadic boundaries and single-ledger conservation
+        run: node kernel/nci-022.test.mjs
