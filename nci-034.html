@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#081326"><title>NCI-034 | Gyro [ Box ( Torroid ) ] | Zeptoverse</title>
+<style>:root{color-scheme:dark;background:#06111f;color:#eafbff;font:15px/1.55 system-ui}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -25%,#214f66 0,#081728 47%,#060e1b)}header,main,footer{max-width:1450px;margin:auto;padding:22px 25px}h1{color:#acffe7;font-size:clamp(2rem,4.3vw,3.8rem);margin:5px 0}.kicker{color:#80ffe0;letter-spacing:.18em;font-size:.83rem}p{color:#c0d0e1;line-height:1.6}a{color:#8bffe1}.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel{background:#102239ec;border:1px solid #3b5d78;border-radius:17px;padding:18px;margin-bottom:16px;box-shadow:0 12px 34px #0004}h2{font-size:1.12rem;margin:0 0 10px}.controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap}label{display:flex;align-items:center;gap:8px}input{accent-color:#9affdf;max-width:160px}button{background:#174f65;border:1px solid #509ca5;color:white;border-radius:10px;padding:10px 13px;cursor:pointer}canvas{width:100%;height:auto;display:block;border:1px solid #315874;border-radius:12px;background:#061628}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{border:1px solid #346077;border-radius:10px;padding:12px}.stat strong{display:block;color:#9affdf;font-size:1.34rem;overflow-wrap:anywhere}pre{font:12px/1.7 ui-monospace,monospace;color:#bde8f1;white-space:pre-wrap;overflow-wrap:anywhere;max-height:460px;overflow:auto}.warning{color:#ffce92}#status{color:#aeffe4}@media(max-width:910px){.layout{grid-template-columns:1fr}header,main,footer{padding:14px}.stats{grid-template-columns:1fr 1fr}}</style></head><body><header><div class="kicker">ROOT 0 · ZEPTOVERSE · NCI-034 · CANONICAL GEOMETRY LOCK</div>
+<h1>{brace/gyro[box(torroid)]}</h1><p>The box stays fixed. The periodic interior changes size. The outer gyro sets orientation. An explicitly anisotropic coupling can split the two effective scalar-mode energies; isotropic coupling leaves the energies unchanged when the gyro rotates.</p><p><a href="./index.html">Zeptoverse home</a> · <a href="./nci-033.html">Previous spectral model</a> · <a href="./kernel/nci-034-kernel.mjs">Executable nested kernel</a> · <a href="./kernel/nci-034.test.mjs">Regression tests</a></p></header>
+<main><section class="panel"><h2>Gyro orientation and nested coupling</h2><div class="controls"><label>Gyro angle <input id="angle" type="range" min="0" max="360" value="0"> <span id="anglev">0°</span></label><label>Coupling <input id="coupling" type="range" min="0" max="45" value="15"><span id="cv">0.15</span></label><label>Anisotropy <input id="anisotropy" type="range" min="0" max="100" value="35"><span id="av">0.35</span></label><label>Inner torroid scale <input id="inner" type="range" min="25" max="100" value="80"><span id="iv">0.80</span></label><button id="isotropic">Set isotropic</button><button id="reset">Reset</button></div><p id="status"></p><div class="stats"><div class="stat">Lower mode<strong id="lower">—</strong></div><div class="stat">Upper mode<strong id="upper">—</strong></div><div class="stat">Energy splitting<strong id="split">—</strong></div></div></section>
+<div class="layout"><div><section class="panel"><h2>Single nested geometry</h2><canvas id="diagram" width="1024" height="580" role="img" aria-label="Outer gyroscopic brace, central fixed cubic box, inner variable toroidal periodic field and reference singlet"></canvas><p class="warning">The drawing is a topology and coupling schematic. The actual computation is a two-mode effective Hermitian matrix, not a solved electrodynamic cavity or Planck-scale field equation.</p></section><section class="panel"><h2>Orientation sweep</h2><canvas id="sweep" width="1024" height="280" role="img" aria-label="Spectral mode splitting plotted across a full gyro turn"></canvas></section></div><div><section class="panel"><h2>Canonical structure and physics</h2><pre id="info"></pre></section><section class="panel"><h2>Conservation and model audit</h2><pre id="audit"></pre></section><section class="panel"><h2>What this does not claim</h2><p>Rigid rotation does not itself change eigenvalues. The model's orientation dependence is deliberately introduced through <code>g(θ) = g₀ [1 + a cos(2θ)]</code>, which represents an anisotropic interaction. A physically predictive rotating cavity would require an explicit field equation, boundary coupling and rotating-frame treatment.</p><p>The periodic torroid is a mathematical flat T³ mode; the visible doughnut is a stylized cross-section. The signed cosmic background <code>−1</code>, reference <code>0</code>, and positive departure <code>+1</code> are categorical labels, not signed Kelvin or measured curvature.</p></section></div></div></main><footer>Zeptoverse NCI-034 · Locked geometry {brace/gyro[box(torroid)]} · no false physical claims</footer>
+<script type="module">
+import {coupledModes,rotate,audit,CANONICAL_GEOMETRY} from "./kernel/nci-034-kernel.mjs";
+const $=x=>document.getElementById(x),ctx=$("diagram").getContext("2d"),plot=$("sweep").getContext("2d");
+const sci=x=>Number(x).toExponential(4);
+function settings(){return {sideM:1e-21,angleRad:Number($("angle").value)*Math.PI/180,
+ coupling:Number($("coupling").value)/100,anisotropy:Number($("anisotropy").value)/100,
+ innerScale:Number($("inner").value)/100}}
+function draw(model){
+ const c=ctx;c.clearRect(0,0,1024,580);const x=512,y=285,angle=model.gyroAngleRad;
+ c.save();c.translate(x,y);c.rotate(angle);
+ c.strokeStyle="#eebc88";c.shadowColor="#eea76b";c.shadowBlur=15;c.lineWidth=6;
+ c.beginPath();c.ellipse(0,0,380,245,0,0,Math.PI*2);c.stroke();c.shadowBlur=0;c.restore();
+ c.strokeStyle="#80ffe1";c.lineWidth=5;c.strokeRect(300,120,424,345);
+ c.strokeStyle="#568ed5";c.lineWidth=4;c.strokeRect(348,79,424,345);
+ [[300,120,348,79],[724,120,772,79],[724,465,772,424],[300,465,348,424]].forEach(e=>{c.beginPath();c.moveTo(e[0],e[1]);c.lineTo(e[2],e[3]);c.stroke()});
+ c.save();c.translate(x+12,y+12);c.scale(model.innerScale,model.innerScale);
+ c.strokeStyle="#b69aff";c.lineWidth=19;c.shadowBlur=18;c.shadowColor="#aa77ff";
+ c.beginPath();c.ellipse(0,0,185,84,-.22,0,Math.PI*2);c.stroke();
+ c.restore();c.shadowBlur=0;
+ c.beginPath();c.arc(x+12,y+12,13,0,Math.PI*2);c.fillStyle="#ffffff";c.shadowBlur=18;c.shadowColor="#ffffff";c.fill();c.shadowBlur=0;
+ c.font="bold 18px ui-monospace,monospace";c.textAlign="center";
+ [["{GYRO}","#ffca9a",512,43],["[ BOX : CONSTANT ]","#80ffe1",512,526],["(TORROID : VARIABLE)","#c9b3ff",512,558]].forEach(t=>{c.fillStyle=t[1];c.fillText(t[0],t[2],t[3])});
+ c.fillStyle="#c0daf0";c.fillText("−1 Background  ·  0 Reference  ·  +1 Departure",512,82);
+}
+function drawSweep(s){
+ const sequence=rotate({...s,steps:72}),p=sequence.points;plot.clearRect(0,0,1024,280);
+ const min=sequence.minSplittingJ,max=sequence.maxSplittingJ,range=Math.max(1e-50,max-min);
+ plot.strokeStyle="#344f70";plot.beginPath();plot.moveTo(65,30);plot.lineTo(65,230);plot.lineTo(985,230);plot.stroke();
+ plot.beginPath();p.forEach((v,i)=>{const x=65+920*i/(p.length-1),y=211-165*(v.splittingJ-min)/range;if(i===0)plot.moveTo(x,y);else plot.lineTo(x,y)});
+ plot.strokeStyle="#9affd7";plot.lineWidth=4;plot.stroke();
+ plot.font="17px ui-monospace,monospace";plot.fillStyle="#c5e7f3";plot.fillText("0°",60,257);plot.fillText("180°",495,257);plot.fillText("360°",944,257);plot.fillText("ΔE splitting vs gyro angle",70,22);
+}
+function render(){
+ const p=settings(),m=coupledModes(p),a=audit(m);
+ $("anglev").textContent=$("angle").value+"°";$("cv").textContent=p.coupling.toFixed(2);$("av").textContent=p.anisotropy.toFixed(2);$("iv").textContent=p.innerScale.toFixed(2);
+ $("lower").textContent=sci(m.eigenvaluesJ[0])+" J";$("upper").textContent=sci(m.eigenvaluesJ[1])+" J";$("split").textContent=sci(m.splittingJ)+" J";
+ $("status").textContent=a.valid?"Canonical nested geometry preserved: "+CANONICAL_GEOMETRY:"Audit failed";
+ $("info").textContent="CANONICAL LOCK\n"+CANONICAL_GEOMETRY+"\n\n−1 = COSMIC_BACKGROUND\n 0 = REFERENCE_SINGLET\n+1 = POSITIVE_DEPARTURE\n\nBox L = "+sci(m.sideM)+" m\nInner periodic T³ L = "+sci(m.innerSideM)+" m\nCoupling g_eff = "+m.effectiveCoupling.toFixed(5)+"\nMixing angle = "+m.mixingAngleRad.toFixed(5)+" rad\n\nTwo-mode energy matrix (J):\n"+m.matrixJ.map(row=>row.map(sci).join(" | ")).join("\n");
+ $("audit").textContent="Audit passed: "+a.valid+"\nTrace residual: "+sci(m.traceResidualJ)+" J\nDeterminant residual: "+sci(m.detResidualJ)+" J²\nRigid isotropic rotation changes eigenvalues: NO\nAnisotropic coupling changes eigenvalues: YES (model)\nPeriodic zero mode: excluded from excitation pair\nFull PDE boundary-value solution: NOT PROVIDED\nPhysical Planck prediction: FALSE";
+ draw(m);drawSweep(p);
+}
+["angle","coupling","anisotropy","inner"].forEach(n=>$(n).oninput=render);
+$("isotropic").onclick=()=>{$("anisotropy").value=0;render()};
+$("reset").onclick=()=>{Object.entries({angle:0,coupling:15,anisotropy:35,inner:80}).forEach(([k,v])=>$(k).value=v);render()};render();
+</script></body></html>
