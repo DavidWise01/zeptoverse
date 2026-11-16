@@ -49,3 +49,5 @@ jobs:
         run: node kernel/nci-026.test.mjs
       - name: NCI-027 acquisition, ancestry and authentication veto
         run: node kernel/nci-027.test.mjs
+      - name: NCI-028 P-256 signed witness root and replay verification
+        run: node kernel/nci-028.test.mjs
