@@ -47,3 +47,5 @@ jobs:
         run: node kernel/nci-025.test.mjs
       - name: NCI-026 three witness agreement and shared provenance
         run: node kernel/nci-026.test.mjs
+      - name: NCI-027 acquisition, ancestry and authentication veto
+        run: node kernel/nci-027.test.mjs
