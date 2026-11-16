@@ -1,0 +1,38 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-021 — Signed Boundary Casimir Kernel</title>
+<style>:root{color-scheme:dark;background:#070e1c;color:#eaf9ff;font:16px system-ui}body{max-width:1140px;margin:auto;padding:24px}h1{color:#89ffe2}p{color:#b4c9dc;line-height:1.6}section{background:#101f37;border:1px solid #345774;border-radius:16px;margin:16px 0;padding:20px}button{background:#155367;border:1px solid #50a5aa;border-radius:10px;padding:11px 16px;color:white;margin:4px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b3e9f4}a{color:#78f6d8}.note{color:#ffd398}input[type=range]{width:min(100%,550px)}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}.stat{border:1px solid #355a73;padding:13px;border-radius:12px}.big{font-size:1.6rem;font-weight:bold;color:#77ffe0}</style></head><body><p>DAVIDWISE01 / ZEPTOVERSE / EXECUTABLE NCI-021</p><h1>Signed Boundary Force · Casimir / Ternary</h1><p>Actual SI formulas for ideal, perfectly conducting parallel plates at zero temperature; a separate dimensionless relative-gap state encodes <strong>−1 / 0 / +1</strong>. The browser imports and runs the kernel source.</p>
+<section><h2>Plate separation · physical control</h2><label for="gap">Gap in nanometers: <strong id="gapLabel">100</strong> nm</label><p><input id="gap" type="range" min="50" max="300" value="100" step="5"></p>
+<button id="apply">Move plates to selected gap</button><button id="compress">−1 · 50 nm</button><button id="neutral">0 · 100 nm</button><button id="expand">+1 · 200 nm</button><button id="seal">Check 1/1 END END</button><button id="reset">New genesis</button>
+<div class="stats"><div class="stat">Ternary relative gap<div id="ternary" class="big"></div></div><div class="stat">Casimir pressure<div id="pressure" class="big"></div></div><div class="stat">Casimir energy<div id="energy" class="big"></div></div></div>
+<pre id="picture"></pre></section>
+<section><h2>Conservation audit</h2><pre id="audit"></pre><p class="note">Negative pressure denotes attraction for these ideal plates at every displayed gap. The model's signed ternary digit is not kelvin or a measurement of quantum-gravity foam.</p></section>
+<section><h2>Append-only displacement ledger</h2><pre id="events"></pre>
+<p><a href="./kernel/nci-021-kernel.mjs">Executable physical kernel</a> · <a href="./kernel/nci-021.test.mjs">Node regression tests</a> · <a href="./nci-020.html">Earlier ternary foam kernel</a></p>
+<p>Physical references: <a href="https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=906575">NIST Casimir review</a> and <a href="https://www.osti.gov/servlets/purl/1850190">Casimir energy formula review</a>.</p></section>
+<script type="module">
+import {start,move,close,audit} from "./kernel/nci-021-kernel.mjs";
+const $=id=>document.getElementById(id);let state=start({gap:100e-9,area:1e-12});
+function format(x,unit){return x.toExponential(5)+" "+unit}
+function render(info){const a=audit(state),sym={"-1":"−1","0":"0","1":"+1"};
+ $("gapLabel").textContent=$("gap").value;
+ $("ternary").textContent=sym[a.ternary];
+ $("pressure").textContent=format(a.physical.pressure,"Pa");
+ $("energy").textContent=format(a.physical.energy,"J");
+ $("picture").textContent="REFERENCE: 100 nm | CURRENT: "+(state.gap*1e9).toFixed(0)+" nm\n"+
+  " upper plate ══════════════════\n"+
+  "           ↓ attractive pressure\n"+
+  "       [ "+sym[a.ternary]+" ] signed gap state\n"+
+  "           ↑ attractive pressure\n"+
+  " lower plate ══════════════════\n";
+ $("audit").textContent=info+"\nGap: "+format(state.gap,"m")+"\nArea: "+format(state.area,"m²")+"\nPressure: "+format(a.physical.pressure,"Pa")+"\nForce: "+format(a.physical.force,"N")+"\nExternal reservoir: "+format(a.workReservoir,"J")+"\nE + reservoir - E_initial: "+format(a.energyBalance,"J")+"\nBalance check: "+a.valid+"\nSeal: "+(a.seal??"OPEN");
+ $("events").textContent=state.history.map(e=>e.seq+" "+e.type+" "+JSON.stringify(e)).join("\n")||"Genesis: no displacement";
+}
+function set(n){$("gap").value=n;state=move(state,n*1e-9);render("Moved to "+n+" nm")}
+$("gap").oninput=()=>$("gapLabel").textContent=$("gap").value;
+$("apply").onclick=()=>set(Number($("gap").value));
+$("compress").onclick=()=>set(50);
+$("neutral").onclick=()=>set(100);
+$("expand").onclick=()=>set(200);
+$("seal").onclick=()=>{state=close(state);render("Checkpoint evaluated")};
+$("reset").onclick=()=>{state=start({gap:100e-9,area:1e-12});$("gap").value=100;render("New genesis")};
+render("Ready");
+</script></body></html>
