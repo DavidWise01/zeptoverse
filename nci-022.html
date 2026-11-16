@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-022 · Triadic Casimir Engine Kernel</title><style>:root{color-scheme:dark;background:#070f1e;color:#e6faff;font:16px system-ui}*{box-sizing:border-box}body{max-width:1140px;margin:auto;padding:24px}h1{color:#79ffdf}p{color:#b7ccda;line-height:1.55}section{padding:17px;border:1px solid #335f73;background:#112138;border-radius:15px;margin:15px 0}button{padding:10px 13px;color:white;background:#155164;border:1px solid #58aaaf;border-radius:10px;cursor:pointer;margin:3px}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#a7e6e5}a{color:#7ef3dc}.notice{color:#ffce92}#stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.tile{border:1px solid #3b6979;border-radius:12px;padding:14px}.big{font-size:1.6em;color:#8bffe5}</style></head><body>
+<p>DAVIDWISE01 / ZEPTOVERSE / EXECUTABLE NCI-022</p>
+<h1>Three Boundaries · One Conserved Ledger</h1>
+<p>Diatomic coupling changes two Casimir gaps at once. Diodic routing moves accounting credits around a one-way ring. Divisive splitting creates bookkeeping descendants without creating new physical plates.</p>
+<section><h2>Triadic apparatus</h2><pre>             [ A : −1 / 0 / +1 ]
+                   │  credit
+                   ▼
+             [ B : −1 / 0 / +1 ]
+                   │  credit
+                   ▼
+             [ C : −1 / 0 / +1 ]
+                   └──────▶ A
+
+  One-way credit loop: A → B → C → A
+  Physical plates: 3, always
+  Energy ledger: Σ E_Casimir + Σ credits + reservoir = constant
+</pre><div id="stats"></div><p id="status" aria-live="polite"></p>
+<button id="pair">Diatomic: A− / B+</button><button id="return">Return A & B gaps</button><button id="grab">Diodic: A → B</button><button id="split">Divisive: split B credit</button><button id="join">Join B credit</button><button id="movebc">B → C</button><button id="moveca">C → A</button><button id="illegal">Try reverse diode</button><button id="seal">Checkpoint</button><button id="sample">Run full closed cycle</button><button id="reset">Reset</button></section>
+<section><h2>Conservation audit</h2><pre id="audit"></pre></section>
+<section><h2>Append-only evidence ledger</h2><pre id="events"></pre><p class="notice">Illustrative engineering bookkeeping—not a self-powering Casimir engine, material synthesis, literal negative kelvin, or experimentally confirmed Planck foam. Credits are explicitly supplied initial stored energy; the model has no thermoelectric conversion efficiency or dissipation yet.</p><p><a href="./kernel/nci-022-kernel.mjs">Executable source</a> · <a href="./kernel/nci-022.test.mjs">Node invariant tests</a> · <a href="./nci-021.html">Prior physical boundary kernel</a></p></section>
+<script type="module">
+import {startTriad,diatomic,diodic,divisive,join,closeTriad,auditTriad,attemptDiodic,sampleRun} from "./kernel/nci-022-kernel.mjs";
+import {idealCasimir} from "./kernel/nci-021-kernel.mjs";
+const $=id=>document.getElementById(id);let state=startTriad();const fmt=x=>Number(x).toExponential(4);
+function show(message){const a=auditTriad(state);$("status").textContent=message;
+ $("stats").innerHTML=["A","B","C"].map(id=>{const b=state.boundaries[id],s=a.ternary[id],p=idealCasimir(b.gap,b.area);
+ return '<div class="tile"><strong>Boundary '+id+'</strong><div class="big">'+(s===-1?"−1":s===1?"+1":"0")+'</div><p>gap '+(b.gap*1e9).toFixed(0)+' nm</p><p>P '+fmt(p.pressure)+' Pa</p><p>credit '+fmt(Object.values(b.pockets).reduce((x,y)=>x+y,0))+' J</p></div>'}).join("");
+ $("audit").textContent="Physical Casimir energy: "+fmt(a.physicalEnergy)+" J\nBookkeeping credits: "+fmt(a.credits)+" J\nExternal work reservoir: "+fmt(a.reservoir)+" J\nLedger mismatch: "+fmt(a.balanceError)+" J\nTotal: "+fmt(a.total)+" J\nSource roots: "+a.roots.join(", ")+"\nRestored physical gaps: "+a.physicalRestored+"\nSeal: "+(a.seal||"OPEN");
+ $("events").textContent=state.events.length?state.events.map(e=>e.seq+" "+e.type+" "+JSON.stringify(e.payload)).join("\n"):"Genesis: no operations.";}
+function apply(fn,label){try{state=fn(state);show(label)}catch(e){show("Not applied: "+e.message)}}
+$("pair").onclick=()=>apply(s=>diatomic(s,"A","B",50e-9,200e-9),"Diatomic gap move");
+$("return").onclick=()=>apply(s=>diatomic(s,"A","B",100e-9,100e-9),"Physical gaps returned");
+$("grab").onclick=()=>apply(s=>diodic(s,"A","B",1e-20),"A → B transfer");
+$("split").onclick=()=>apply(s=>divisive(s,"B","main",0.4,"left","right"),"B credits partitioned");
+$("join").onclick=()=>apply(s=>join(s,"B","left","right","main"),"B credits rejoined");
+$("movebc").onclick=()=>apply(s=>diodic(s,"B","C",1e-20),"B → C transfer");
+$("moveca").onclick=()=>apply(s=>diodic(s,"C","A",1e-20),"C → A transfer");
+$("illegal").onclick=()=>{const r=attemptDiodic(state,"B","A",1e-20);state=r.state;show("Forbidden reverse transfer: "+r.reason)};
+$("seal").onclick=()=>apply(s=>closeTriad(s),"Checkpoint evaluated");
+$("sample").onclick=()=>{state=sampleRun();show("Full closed cycle completed")};
+$("reset").onclick=()=>{state=startTriad();show("New genesis")};show("Ready");
+</script></body></html>
