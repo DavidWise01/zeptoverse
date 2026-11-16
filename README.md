@@ -530,3 +530,20 @@ The executable kernel sweeps a characteristic idealized plate separation `L` fro
 **Physical validity warning:** mathematical extrapolation of ideal Casimir plates to zeptometers or Planck lengths is **not a physically validated continuum conducting-surface calculation**. Perfect conductor, macroscopic plane and local boundary assumptions become invalid far before these separations. The Planck scale is a boundary where the known semiclassical/field descriptions may be inadequate; the kernel does not claim to calculate genuine fluctuating spacetime geometry. Plate area is held fixed solely for an algebraic scaling test.
 
 Constants reference: [NIST 2022 CODATA recommended physical constants](https://physics.nist.gov/cuu/Constants/); ideal parallel-plane Casimir formula [Stanford-hosted physics reference](https://stanford.edu/~oas/SI/QM/papers/CasimirEffectPaper.pdf). Run `node kernel/nci-032.test.mjs` using Node 22+. A committed Pages workflow is not proof of successful deployment or automated tests.
+
+## NCI-033 — Actual boundary-condition spectral comparison: cube vs flat T³
+
+[Runnable GitHub Pages visual laboratory](nci-033.html) · [Executable spectrum kernel](kernel/nci-033-kernel.mjs) · [Node regression tests](kernel/nci-033.test.mjs).
+
+Continue **physics, not witness authentication**. Fix the canonical categorical frame `{-1, [0, (+1)]}`: cosmic background `−1`, reference singlet `0`, excited field mode `+1`. The frame persists as the side length L and boundary geometry change. The CMB at approximately 2.7255 K is contextual background, not a literal negative temperature, negative frequency, or Planck-length thermostat.
+
+Compare a **massless scalar field** on a three-dimensional **Dirichlet cube**, with zero field at every face, against a **flat three-torus T³**, formed by identifying opposite faces with periodic boundary conditions. For equal side lengths L:
+
+- Box: `(nx,ny,nz) in positive integers`, `|k| = π sqrt(nx²+ny²+nz²)/L`, lowest mode `(1,1,1)`, `n²=3`, degeneracy **1**.
+- Periodic T³: `(nx,ny,nz) in all integers`, `|k| = 2π sqrt(nx²+ny²+nz²)/L`, first nonzero shell `n²=1`, degeneracy **6** (± along each of the three axes). The `(0,0,0)` mode has zero frequency and is **not** counted as an excited oscillator; a massless periodic zero mode requires separate infrared treatment.
+- For one massless scalar excitation, `E = ħc |k|`. The first-excitation energy ratio is `E_T³/E_box = 2/sqrt(3)`. Both excitation energies scale as `L^-1` for fixed indices.
+- The NCI-033 executable enumerates an explicit finite mode cutoff, retains indices and degeneracies, and checks exact shell counts, power-law ratio and ternary frame conservation.
+
+**Limits:** Neither spectrum is a fully computed electromagnetic Casimir energy or a renormalized vacuum stress. In a real toroidal material versus a cube, fields, topology, surface conductivities and boundary conditions need separate modeling. A flat T³ is not the doughnut-shaped 2-torus embedded in ordinary three-space. At zeptometer and especially Planck lengths the imposed material/boundary assumptions are not physically verified; a mathematical mode spectrum is not evidence of spacetime foam or quantum gravity.
+
+Test with `node kernel/nci-033.test.mjs` on Node 22+. The full Pages chapter provides geometry selector, index cutoff, logarithmic spatial-scale slider, spectral shell table, and animated-looking drawn boundary mode schematic using Canvas2D. Its HTML imports the real published JS kernel. Live Pages deployment and CI pass must be checked independently.
