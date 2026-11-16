@@ -453,3 +453,17 @@ Run `node kernel/nci-026.test.mjs`. Automated CI success and live GitHub Pages p
 The browser demonstration offers four **synthetic fixtures**: three declared distinct sources, shared upstream ancestry, timestamp skew and value disagreement. None are real independent measurements or proof of Ice IX, Casimir-driven power, Planck foam or thermodynamic material behavior.
 
 **Natural next requirement:** authenticated independent instrument origin, signed event evidence, calibrated timestamps, measurements with uncertainties, and lineage roots that survive upstream auditing; only then consider a verified `1/1 END END` witness seal. Run `node kernel/nci-027.test.mjs`. Source publication does not imply the test run or GitHub Pages deployment succeeded.
+
+## NCI-028 — Signed witness identities and full Pages laboratory
+
+[Full executable GitHub Pages lab](nci-028.html) · [ECDSA P-256 module](kernel/nci-028-kernel.mjs) · [Node cryptographic assertions](kernel/nci-028.test.mjs).
+
+This kernel extends NCI-027's three-observer acquisition with:
+- **Operator-pinned identity** `register`: sensor identity, root, P-256 public key (JWK), declared upstream ancestry and credential issuer are configured before accepting a packet.
+- **WebCrypto signatures:** `signPacket` computes SHA-256 ECDSA P-256 signatures over canonical JSON of event, sensor, ancestry, measurement identity, kelvin reading, timestamp, and nonce. **No private signing keys are stored in the repository**; the Pages demo generates ephemeral browser-local key pairs.
+- **Tamper and replay checks:** `acquire` rejects invalid signatures, source-root mismatch, stale or future timestamps, replayed sensor/nonce, duplicate sensor/event and reused measurement IDs, while preserving append-only rejection events.
+- **Witness convergence:** `inspect` checks three matching-event signed receipts, pairwise root/upstream disjointness, time skew, and reading spread. The resulting `CREDENTIAL_VERIFIED` is an authenticity check **relative to an operator-controlled key registry**.
+- **Physical provenance boundary:** all three demo signers can exist in one browser. Valid signatures cannot prove three physical sensors, that their clocks were independently calibrated, or that their upstream readings are actually independent. Therefore `trustedPhysicalObservation=false` and there is **no sealed physical** `1/1 END END` checkpoint even for agreeing signed packets.
+- **Full browser UI:** cryptographic packet-generation fixtures, ancestry diagram, receipts, verification events, and checkpoint audit. Pages workflow `.github/workflows/pages.yml` deploys the static repository upon push if GitHub Pages is enabled with appropriate permissions.
+
+Run `node kernel/nci-028.test.mjs` with Node 22+. This code uses built-in WebCrypto (P-256 and SHA-256), not an external cryptography package. For real instrument validation, use hardware-backed keys, independently provisioned trust anchors, timestamp attestation, calibration records, and audit of common upstream infrastructure.
