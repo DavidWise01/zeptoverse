@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071426"><title>NCI-028 · Authenticated Witness Roots | Zeptoverse</title>
+<style>
+:root{color-scheme:dark;background:#070f1d;color:#eefaff;font:15px/1.5 system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -30%,#164b5e 0,#08172a 38%,#050b16 90%);min-height:100vh}
+header,main,footer{max-width:1440px;margin:auto;padding:22px 26px}
+a{color:#79f6dc}h1{font-size:clamp(2rem,4vw,3.8rem);margin:.1em 0;color:#adffe9}h2{font-size:1.12rem;margin:0 0 12px}
+small,.subtle{color:#a2bcd0}.kicker{color:#7af4db;letter-spacing:.18em;text-transform:uppercase;font-size:.83rem}
+.controls{display:flex;gap:8px;flex-wrap:wrap}.controls button{padding:11px 13px;border-radius:9px;background:#113d53;color:white;border:1px solid #538e9f;cursor:pointer;font-weight:600}
+.controls button:hover{background:#1b6474}.layout{display:grid;grid-template-columns:1.12fr .88fr;gap:16px;align-items:start}
+.panel{border:1px solid #2d526c;background:#0d2035dc;border-radius:16px;padding:18px;box-shadow:0 14px 42px #0004;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.metric{border:1px solid #335e72;padding:12px;border-radius:12px;background:#122b3f}.metric .value{color:#99ffdd;font-size:1.5rem;font-weight:750;overflow-wrap:anywhere}
+pre{font:12px/1.6 ui-monospace,SFMono-Regular,monospace;color:#b9e8f0;white-space:pre-wrap;overflow-wrap:anywhere;max-height:380px;overflow:auto}
+canvas{width:100%;height:auto;display:block;border-radius:13px;background:#071426;border:1px solid #244862}
+#status{min-height:1.8em;color:#f4d099;font-weight:650}.flag{color:#e5c48c}
+table{border-collapse:collapse;width:100%;font-size:.83rem}td,th{border-bottom:1px solid #2d5068;text-align:left;padding:9px;overflow-wrap:anywhere;vertical-align:top}th{color:#9bdde0}
+footer{color:#9db6c8}code{color:#b5ffe3}
+@media(max-width:920px){.layout{grid-template-columns:1fr}header,main,footer{padding:16px}.grid{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<header><div class="kicker">ROOT 0 / ZEPTOVERSE / CRYPTOGRAPHIC WITNESS KERNEL / NCI-028</div><h1>Three keys. Three roots.<br>One honest checkpoint.</h1><p>Execute P-256 signed sensor receipts locally in your browser. Pin three public keys, sign fresh synthetic observations, verify their signatures and ancestry, and test tampering, replay, shared roots, measurement disagreement and clock skew.</p><p><a href="./index.html">All Zeptoverse chapters</a> · <a href="./nci-027.html">Previous acquisition kernel</a> · <a href="./kernel/nci-028-kernel.mjs">Executable ES module</a> · <a href="./kernel/nci-028.test.mjs">Automated tests</a></p></header>
+<main><div class="panel">
+<h2>Run the signed witness protocol</h2>
+<div class="controls"><button id="normal">Generate 3 signed packets</button><button id="shared">Shared upstream</button><button id="tamper">Tampered signature</button><button id="disagree">Temperature disagreement</button><button id="skew">Clock disagreement</button><button id="replay">Replay last receipt</button><button id="reset">Reset</button></div><p id="status" aria-live="polite">Ready for a local cryptographic experiment.</p>
+<div class="grid"><div class="metric">Signed receipts<div class="value" id="receipts">0</div></div><div class="metric">Pinned identities<div class="value" id="identities">0</div></div><div class="metric">Checkpoint<div class="value" id="gate">EMPTY</div></div></div>
+<div style="margin-top:16px"><canvas id="viz" width="900" height="430" role="img" aria-label="Three credential roots converging to evidence and checkpoint gates"></canvas></div></div>
+<div class="layout"><div><section class="panel"><h2>Packet verification</h2><table><thead><tr><th>Sensor</th><th>Temperature</th><th>Device root</th><th>Signature receipt</th></tr></thead><tbody id="packets"></tbody></table></section>
+<section class="panel"><h2>Append-only event history</h2><pre id="events">No receipts yet.</pre></section></div>
+<div><section class="panel"><h2>Witness gate</h2><pre id="audit">No checkpoint.</pre></section>
+<section class="panel"><h2>What the signature means</h2><p><strong>Cryptographic verification:</strong> the receipt matches the private key corresponding to an operator-pinned public key. Signed fields include event, source, measurement, temperature, time, nonce, and upstream ancestry.</p><p><strong>Not proven:</strong> these keys are generated in the same browser session. Their different signatures do not establish three real sensors, calibrated thermometers, trusted clocks, or physically independent observers.</p><p class="flag">The simulator intentionally leaves physical-witness trust <strong>false</strong>. No physical <code>1/1 END END</code> seal is issued.</p></section>
+<section class="panel"><h2>Scope and next measurement</h2><p>Use an authenticated device-provisioning process with separate hardware keys, external clock discipline, recorded calibration, and upstream instrument provenance before considering a real checkpoint.</p><p>Neither the signatures nor the balanced-ternary controller prove Planck foam, Ice IX behavior, or a Casimir-powered device.</p></section></div></div></main>
+<footer>Append-only observations · P-256 / SHA-256 · WebCrypto secure-context API · NCI-028 · ROOT 0</footer>
+<script type="module">
+import {begin,syntheticDemo,acquire,inspect,audit} from "./kernel/nci-028-kernel.mjs";
+const $=x=>document.getElementById(x),canvas=$("viz"),ctx=canvas.getContext("2d");
+let state=begin(),lastPacket=null,decision=null,locked=false;
+function node(x,y,text,accent){
+ ctx.beginPath();ctx.arc(x,y,47,0,2*Math.PI);ctx.fillStyle="#102f44";ctx.fill();ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.stroke();
+ ctx.textAlign="center";ctx.fillStyle=accent;ctx.font="bold 18px ui-monospace,monospace";ctx.fillText(text,x,y+6);
+}
+function render(message){$("status").textContent=message;const report=audit(state);$("receipts").textContent=report.receipts;$("identities").textContent=report.registrations;
+ decision=inspect(state,"THERM-1");$("gate").textContent=decision.status;
+ const colors=decision.status==="CREDENTIAL_VERIFIED"?"#79efdc":"#e9b573";
+ ctx.clearRect(0,0,900,430);ctx.strokeStyle="#437f91";ctx.lineWidth=3;
+ for(let i=0;i<3;i++){const x=175+275*i;ctx.beginPath();ctx.moveTo(x,152);ctx.lineTo(450,290);ctx.stroke()}
+ ["ROOT A","ROOT B","ROOT C"].forEach((name,i)=>node(175+275*i,105,name,"#93baff"));
+ node(450,322,"GATE",colors);
+ ctx.textAlign="center";ctx.font="16px ui-monospace,monospace";ctx.fillStyle=colors;
+ ctx.fillText("RECEIPTS: "+report.receipts+" / 3",450,226);ctx.fillText(decision.status,450,401);
+ $("packets").textContent="";
+ state.receipts.forEach(p=>{const tr=document.createElement("tr");
+ [p.sensorId,p.valueK.toFixed(4)+" K",p.rootId,p.signatureHex.slice(0,15)+"…"].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td)});
+ $("packets").append(tr)});
+ $("events").textContent=state.events.map(e=>"#"+e.seq+" "+e.type+" "+(e.sensorId??"")+" "+(e.reason??e.status??"")).join("\n")||"No events.";
+ $("audit").textContent="Gate: "+decision.status+"\nSigned packets: "+report.receipts+"\nPinned keys: "+report.registrations+
+  "\nSignature validated for accepted receipts: "+(report.receipts>0)+
+  "\nDeclared-root disjointness: "+(decision.structuralIndependence??"not assessed")+
+  "\nObservation spread: "+(decision.spreadK??"n/a")+" K"+
+  "\nClock spread: "+(decision.skewMs??"n/a")+" ms"+
+  "\nPhysically independent: false\nTrusted physical checkpoint: false\nSeal: NONE";
+}
+async function run(options={},name="Synthetic signed packets"){
+ if(locked)return;locked=true;$("status").textContent="Generating ephemeral P-256 keys and verifying signed receipts…";
+ try{const result=await syntheticDemo(options);state=result.state;
+ lastPacket=state.receipts.at(-1)??null;render(name+" · "+result.gate.status)}
+ catch(e){render("Error: "+e.message)}finally{locked=false}
+}
+$("normal").onclick=()=>run({},"Signed synthetic observation");
+$("shared").onclick=()=>run({shared:true},"Correlated roots");
+$("tamper").onclick=()=>run({tamper:true},"Tampering detected");
+$("disagree").onclick=()=>run({disagree:true},"Out-of-band reading");
+$("skew").onclick=()=>run({skew:true},"Clock skew detected");
+$("replay").onclick=async()=>{if(locked)return;if(!lastPacket)return render("Generate a packet set first");
+ const r=await acquire(state,lastPacket);state=r.state;render("Replay result: "+r.reason)};
+$("reset").onclick=()=>{if(locked)return;state=begin();lastPacket=null;render("Reset to empty kernel")};
+render("Ready. All keys and signatures stay inside this browser session.");
+</script></body></html>
