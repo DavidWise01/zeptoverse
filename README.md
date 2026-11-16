@@ -547,3 +547,17 @@ Compare a **massless scalar field** on a three-dimensional **Dirichlet cube**, w
 **Limits:** Neither spectrum is a fully computed electromagnetic Casimir energy or a renormalized vacuum stress. In a real toroidal material versus a cube, fields, topology, surface conductivities and boundary conditions need separate modeling. A flat T³ is not the doughnut-shaped 2-torus embedded in ordinary three-space. At zeptometer and especially Planck lengths the imposed material/boundary assumptions are not physically verified; a mathematical mode spectrum is not evidence of spacetime foam or quantum gravity.
 
 Test with `node kernel/nci-033.test.mjs` on Node 22+. The full Pages chapter provides geometry selector, index cutoff, logarithmic spatial-scale slider, spectral shell table, and animated-looking drawn boundary mode schematic using Canvas2D. Its HTML imports the real published JS kernel. Live Pages deployment and CI pass must be checked independently.
+
+## NCI-034 — Canonical geometry lock: `{brace/gyro[box(torroid)]}`
+
+[Full Pages executable geometry laboratory](nci-034.html) · [ES-module kernel](kernel/nci-034-kernel.mjs) · [Node invariants](kernel/nci-034.test.mjs).
+
+**Locked nesting:** The brace/gyro is the orientation frame; the **box is the constant external boundary**; the **torroid (flat periodic T³ mode in this implementation) is the variable interior**; the central singlet is the reference. The categorical physics frame is unchanged: `{-1, [0, (+1)]}` = cosmic background, reference singlet, positive departure. NCI-033's box and torus are now combined in one **effective two-mode system**, not treated as competing exterior geometries.
+
+**Explicit mathematics:** Let `E_b=ħ c π√3/L` for the lowest Dirichlet-box scalar excitation and `E_t=ħ c (2π)/(rL)` for the first nonzero interior periodic scalar excitation, with internal scale `0<r≤1`. The phenomenological symmetric coupling Hamiltonian (joules) is `H=[[E_b,V],[V,E_t]]` with `V=g(θ)√(E_b E_t)`; `g(θ)=g0[1+a cos(2θ)]`, where `0≤a≤1` denotes explicitly imposed orientational anisotropy and `0≤g0(1+a)<1` keeps the two-mode energies positive. The eigenvalues are `(E_b+E_t)/2 ± √(((E_b-E_t)/2)²+V²)`.
+
+**Tested structural properties:** Hermitian eigenvalues conserve matrix trace and determinant; setting `g0=0` restores uncoupled eigenvalues; setting `a=0` makes the eigenvalues independent of mere gyro orientation; nonzero `a` permits an explicitly model-dependent splitting; fixed shape/coupling yields `E∝1/L`. The periodic zero mode is excluded from this particular excited-mode pair and needs separate infrared analysis.
+
+**Honest physical limits:** This is a **hypothesized effective coupling**, not a PDE solution for an actual box with a periodically identified inner region. An actual embedded toroid, rotating medium, cavity or quantum gravity model requires physical field equations, matching/interface conditions, possibly time-dependent rotation and geometry-specific regularization. No renormalized Casimir energy or Planck-scale physical prediction is asserted. The HTML Canvas2D representation is schematic; it imports this executable ES module and exposes gyro angle, coupling, anisotropy and inner-scale controls.
+
+The GitHub Pages deployment workflow `.github/workflows/pages.yml` exists; completed live deployment or CI success must be verified separately. Test with `node kernel/nci-034.test.mjs` on Node 22+.
