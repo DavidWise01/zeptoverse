@@ -467,3 +467,15 @@ This kernel extends NCI-027's three-observer acquisition with:
 - **Full browser UI:** cryptographic packet-generation fixtures, ancestry diagram, receipts, verification events, and checkpoint audit. Pages workflow `.github/workflows/pages.yml` deploys the static repository upon push if GitHub Pages is enabled with appropriate permissions.
 
 Run `node kernel/nci-028.test.mjs` with Node 22+. This code uses built-in WebCrypto (P-256 and SHA-256), not an external cryptography package. For real instrument validation, use hardware-backed keys, independently provisioned trust anchors, timestamp attestation, calibration records, and audit of common upstream infrastructure.
+
+## NCI-029 — Signed issuer-chain provisioning and calibration provenance
+
+[Full interactive Pages laboratory](nci-029.html) · [Executable module](kernel/nci-029-kernel.mjs) · [Node assertions](kernel/nci-029.test.mjs).
+
+NCI-029 introduces operator-pinned certificate *issuer* keys in addition to NCI-028's device signing keys. The `pinIssuer` operation records issuer trust domain and P-256 public key. The `signCertificate` and `provision` operations use P-256 ECDSA/SHA-256 to verify device-key bindings, assigned sensor/root, claimed calibration range/uncertainty/validity window, and declared upstream ancestry. Certificates are signed over canonical JSON fields and preserved with the original registration; packet acquisition checks calibration range and validity before using NCI-028 receipt-signature verification.
+
+**Convergence:** The three receipt packets must have valid signed identities and calibrated data in the same event, distinct declared upstream roots, and independent declared issuer trust domains. Explicitly shared issuer domains are vetoed. The software allows `CHAIN_VERIFIED` for three matching software-generated receipts with different pinned issuers; however, `hardwareAttestation = UNVERIFIED`, `physicalHardwareAttested = false`, `trusted = false`, and `seal = null` always. It would be false to assert that three software signers are independent physical thermometers.
+
+**Executable fixtures:** separate issuer domains, deliberately shared domains, forged calibration field after signing, expired certificate, and disagreeing Kelvin readings. No private keys are committed; browser signing keys are ephemeral. This is not a true hardware attestation API. A future adapter would require manufacturer attestations, recognized anchors, calibration traceability, trusted wall-clock synchronization, independent measurement power/data plumbing, and a calibrated uncertainty model.
+
+The existing `.github/workflows/pages.yml` attempts deployment on push to `main`. This code commit alone does not demonstrate Pages deployment or CI success. Local regression command: `node kernel/nci-029.test.mjs` with Node 22+ and WebCrypto.
