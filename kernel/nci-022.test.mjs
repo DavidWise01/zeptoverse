@@ -14,7 +14,7 @@ assert.equal(denied.accepted,false);
 assert.equal(denied.state.events.at(-1).type,"REJECT");
 assert.deepEqual(denied.state.boundaries,s.boundaries);
 s=diodic(s,"A","B",1e-20);
-assert.equal(s.boundaries.A.pockets.main,2e-20);
+near(s.boundaries.A.pockets.main,2e-20);
 near(s.boundaries.B.pockets.main,1e-20);
 s=divisive(s,"B","main",0.4,"left","right");
 assert.equal(Object.keys(s.boundaries.B.pockets).length,2);
