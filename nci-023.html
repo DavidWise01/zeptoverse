@@ -1,0 +1,34 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zeptoverse NCI-023 · Kelvin–Peltier Loss Kernel</title>
+<style>:root{color-scheme:dark;background:#08101d;color:#eaf9ff;font:16px system-ui}*{box-sizing:border-box}body{max-width:1150px;margin:auto;padding:24px}h1{color:#85ffe1}p{color:#bad0dd;line-height:1.55}section{background:#112037;border:1px solid #375b76;border-radius:15px;padding:18px;margin:15px 0}button{background:#165468;color:white;border:1px solid #509daa;padding:10px 14px;border-radius:10px;margin:3px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b6e8f4}a{color:#83f5dc}.warn{color:#ffcb8c}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.metric{border:1px solid #385a72;border-radius:10px;padding:12px}.value{font-size:1.45rem;color:#86ffdd;font-weight:700}</style></head><body>
+<p>ZEPTOVERSE / NCI-023 / EXECUTABLE THERMODYNAMIC KERNEL</p>
+<h1>Kelvin–Peltier Losses · Three-Boundary Casimir Ledger</h1>
+<p>Heat pumping, conductive leak, Joule heating and electrical work now have independent, dimensioned accounts. The underlying triadic Casimir kernel remains intact; thermal energy and entropy are tracked separately.</p>
+<section><h2>Thermoelectric driver</h2><pre>  Cold reservoir (290 K)       Hot reservoir (310 K)
+             │                         ▲
+             └───────[ PELTIER ]───────┘
+                     ↑ electrical work
+               JOULE + HEAT LEAK
+                    ↓ entropy
+     [ A, B, C Casimir boundaries / independent ledger ]</pre>
+<label>Current: <strong id="ampLabel">1.0</strong> A</label><p><input type="range" id="amp" min="0" max="2" step=".1" value="1" style="width:min(100%,420px)"/></p>
+<button id="setAmp">Set drive current</button><button id="tick">Run 1-second tick</button><button id="cycle">Change A/B Casimir gaps</button><button id="restore">Restore A/B gaps</button><button id="bad">Test invalid interval</button><button id="reset">Reset</button><p id="status" aria-live="polite"></p><div id="stats" class="stats"></div></section>
+<section><h2>First law / second law audit</h2><pre id="ledger"></pre><p class="warn">Fixed-temperature ideal reservoirs and constant module coefficients; no heat capacity dynamics, efficiency-of-conversion claim, mechanical generator, or experimentally verified quantum foam. The Kelvin thermoelectric relation is used in the constant-Seebeck approximation.</p></section>
+<section><h2>Append-only event history</h2><pre id="events"></pre><p><a href="./kernel/nci-023-kernel.mjs">Executable kernel</a> · <a href="./kernel/nci-023.test.mjs">Automated tests</a> · <a href="./nci-022.html">Prior triadic boundary kernel</a></p></section>
+<script type="module">
+import {begin,rates,tick,setDrive,pairCasimir,attemptTick,audit} from "./kernel/nci-023-kernel.mjs";
+const $=id=>document.getElementById(id);let state=begin();const fmt=x=>Number(x).toExponential(4);
+function render(message){const a=audit(state),r=rates(state.parameters);$("status").textContent=message;$("ampLabel").textContent=$("amp").value;
+ $("stats").innerHTML=[["Cold-side heat",r.coldHeatW,"W"],["Hot-side heat",r.hotHeatW,"W"],["Electrical input",r.electricalW,"W"],["Joule loss",r.jouleW,"W"],["Conductive leak",r.leakW,"W"],["Cooling COP",r.cop??0,"(dimensionless)"]].map(([name,v,u])=>'<div class="metric"><div>'+name+'</div><div class="value">'+fmt(v)+'</div><small>'+u+'</small></div>').join("");
+ $("ledger").textContent="Cold reservoir energy change: "+fmt(a.coldJ)+" J\nHot reservoir energy change: "+fmt(a.hotJ)+" J\nElectrical store energy change: "+fmt(a.electricalJ)+" J\nCasimir-triad total: "+fmt(a.casimirTriad.total)+" J\nCombined energy residual: "+fmt(a.energyResidual)+" J\nEntropy produced: "+fmt(a.entropyProductionJperK)+" J/K\nEntropy nonnegative: "+(a.entropyProductionJperK>=0)+"\nTriad signs: "+JSON.stringify(a.casimirTriad.ternary)+"\nCooling COP: "+(r.cop===null?"n/a":r.cop.toFixed(4))+"\nCarnot cooling COP bound: "+(r.carnot===null?"n/a":r.carnot.toFixed(4));
+ $("events").textContent=state.events.length?state.events.map(e=>e.seq+" "+e.type+" "+JSON.stringify(e)).join("\n"):"GENESIS: no events";
+}
+function apply(action,label){try{state=action(state);render(label)}catch(e){render("Not applied: "+e.message)}}
+$("amp").oninput=()=>$("ampLabel").textContent=$("amp").value;
+$("setAmp").onclick=()=>apply(s=>setDrive(s,Number($("amp").value)),"Current changed");
+$("tick").onclick=()=>apply(s=>tick(s,1),"One-second thermodynamic step");
+$("cycle").onclick=()=>apply(s=>pairCasimir(s,"A","B",50e-9,200e-9),"Casimir boundaries shifted");
+$("restore").onclick=()=>apply(s=>pairCasimir(s,"A","B",100e-9,100e-9),"Casimir boundaries restored");
+$("bad").onclick=()=>{let r=attemptTick(state,-1);state=r.state;render("Rejected interval: "+r.reason)};
+$("reset").onclick=()=>{state=begin();$("amp").value=1;render("Fresh genesis")};render("Ready");
+</script></body></html>
