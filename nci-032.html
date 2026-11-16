@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080f20"><title>NCI-032 | Cosmic Background to Planck Scale | Zeptoverse</title>
+<style>:root{color-scheme:dark;background:#06111e;color:#eafbff;font:15px/1.5 system-ui}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#173f6b 0,#071729 45%,#040b17 100%)}header,main,footer{max-width:1440px;margin:auto;padding:22px 25px}.kicker{color:#87fbe4;letter-spacing:.17em;font-size:.84rem}h1{font-size:clamp(2rem,4vw,3.6rem);line-height:1.15;color:#b3ffe4;margin:5px 0}p{color:#b3cddd;line-height:1.55}a{color:#8df9e1}.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel{background:#102238dd;border:1px solid #325875;border-radius:16px;padding:19px;margin-bottom:16px;box-shadow:0 12px 40px #0004}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.tile{border:1px solid #3d6381;border-radius:12px;padding:11px}.tile strong{display:block;color:#9bffe0;font-size:1.35rem;overflow-wrap:anywhere}h2{font-size:1.13rem;margin:0 0 10px}canvas{width:100%;height:auto;display:block;background:#061527;border:1px solid #2d4e70;border-radius:12px}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}button{cursor:pointer;background:#1a5269;color:white;border:1px solid #4c9ea6;border-radius:9px;padding:10px 14px}input{accent-color:#91ffe2;width:min(100%,430px)}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#bae7f7;font:12px/1.7 ui-monospace,monospace;max-height:480px;overflow:auto}.warn{color:#ffce91}#status{min-height:23px;color:#b5f9e4}table{width:100%;border-collapse:collapse;font-size:.86rem}td,th{padding:9px;text-align:left;border-bottom:1px solid #355976}@media(max-width:920px){.layout{grid-template-columns:1fr}header,main,footer{padding:14px}.metrics{grid-template-columns:1fr 1fr}}</style></head><body><header>
+<div class="kicker">ZEPTOVERSE / ROOT 0 / NCI-032 / EXECUTABLE SCALE PHYSICS</div>
+<h1>Cosmic background −1.<br>Reference 0.<br>Departure +1.</h1>
+<p>Explore dimensioned field-model scaling from 10<sup>−21</sup> meters toward the Planck length. The ternary frame remains fixed while physical separation changes. No witness detour: the scientific questions are the ideal Casimir power laws, their validity limits, and the dimensionless gravitational scale.</p><p><a href="./index.html">Zeptoverse homepage</a> · <a href="./kernel/nci-032-kernel.mjs">Actual physics module</a> · <a href="./kernel/nci-032.test.mjs">Regression tests</a> · <a href="https://physics.nist.gov/cuu/Constants/">CODATA constants</a></p></header>
+<main><section class="panel"><h2>Scaled physical separation</h2><div class="controls"><button id="previous">Increase scale ×10</button><button id="next">Decrease scale ÷10</button><button id="planck">Planck-scale boundary</button><button id="reset">Reset to zeptometer</button><label>Generation <span id="index">0</span> <input id="slider" type="range" min="0" max="14" value="0"></label></div><p id="status">Ready</p><div class="metrics"><div class="tile">Separation<strong id="gap">—</strong></div><div class="tile">Ideal pressure<strong id="pressure">—</strong></div><div class="tile">Gravity parameter α<sub>G</sub><strong id="gravity">—</strong></div></div></section>
+<div class="layout"><div><section class="panel"><h2>Cosmic reference and scale geometry</h2><canvas id="field" width="1040" height="585" role="img" aria-label="Cosmic minus one, reference zero, plus one departure around an increasingly fine separation"></canvas><p class="warn">The plate illustration is mathematical. Perfect conducting surfaces and zero-temperature continuum field boundaries do not remain physically validated at zeptometer or Planck separations.</p></section><section class="panel"><h2>Generational scale ledger</h2><pre id="ledger"></pre></section></div>
+<div><section class="panel"><h2>Unchanging ternary frame</h2><pre id="frame"></pre></section><section class="panel"><h2>Power-law invariants</h2><pre id="invariants"></pre></section><section class="panel"><h2>Validity and provenance</h2><pre id="audit"></pre><p>Background temperature is an environmental reference only; we do not impose the CMB as the local temperature of Planck-length geometry. The gravitational parameter (ℓ<sub>P</sub>/L)² is an order-of-magnitude dimensional coupling, not an established quantum-gravity prediction.</p></section></div></div></main>
+<footer>NCI-032 · Physical scale sweep / mathematical extrapolation · No claimed experimental observation at Planck length</footer>
+<script type="module">
+import {sweep,frame,scalingInvariant,audit,PLANCK_M,CMB_K} from "./kernel/nci-032-kernel.mjs";
+const $=id=>document.getElementById(id),ctx=$("field").getContext("2d");
+const run=sweep();let index=0;const compact=x=>Number(x).toExponential(4);
+function draw(point){
+ const w=1040,h=585;ctx.clearRect(0,0,w,h);
+ const grad=ctx.createRadialGradient(520,280,40,520,280,540);
+ grad.addColorStop(0,"#183c5d");grad.addColorStop(1,"#05101f");ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
+ ctx.fillStyle="#84baf5";ctx.font="bold 25px ui-monospace,monospace";ctx.textAlign="center";ctx.fillText("−1  COSMIC BACKGROUND",520,65);
+ ctx.fillStyle="#a2ffe7";ctx.fillText("0  REFERENCE SINGLET",520,298);
+ ctx.fillStyle="#ffc590";ctx.fillText("+1  POSITIVE DEPARTURE",520,530);
+ ctx.strokeStyle="#487aaf";ctx.lineWidth=4;ctx.setLineDash([12,11]);ctx.beginPath();ctx.moveTo(520,95);ctx.lineTo(520,246);ctx.stroke();ctx.strokeStyle="#d9aa78";ctx.beginPath();ctx.moveTo(520,345);ctx.lineTo(520,483);ctx.stroke();ctx.setLineDash([]);
+ const space=240*Math.pow(0.74,index);const xL=520-space/2,xR=520+space/2;
+ ctx.lineWidth=6;ctx.shadowBlur=25;ctx.shadowColor="#65f9e3";ctx.strokeStyle="#79f9df";ctx.beginPath();ctx.moveTo(xL,150);ctx.lineTo(xL,448);ctx.moveTo(xR,150);ctx.lineTo(xR,448);ctx.stroke();ctx.shadowBlur=0;
+ ctx.beginPath();ctx.arc(520,310,16,0,Math.PI*2);ctx.fillStyle="#fcfbff";ctx.fill();
+ for(let j=0;j<12;j++){const a=j*2*Math.PI/12-index*.21,rad=37+((j%3)*17);ctx.beginPath();ctx.arc(520+rad*Math.cos(a),310+rad*Math.sin(a),3,0,Math.PI*2);ctx.fillStyle=j%2?"#7fffe6":"#a9a0ff";ctx.fill()}
+ ctx.fillStyle="#d1eefa";ctx.font="18px ui-monospace,monospace";ctx.fillText("L = "+compact(point.gapM)+" m",520,467);
+ ctx.fillStyle="#b5c8e4";ctx.font="16px ui-monospace,monospace";ctx.fillText("GENERATIONS  "+index+"  /  "+(run.points.length-1),520,566);
+}
+function render(message){
+ const p=run.points[index],a=audit(run),f=run.frame;
+ $("index").textContent=index;$("slider").value=index;$("slider").max=run.points.length-1;
+ $("gap").textContent=compact(p.gapM)+" m";$("pressure").textContent=compact(p.idealPressurePa)+" Pa";
+ $("gravity").textContent=compact(p.alphaG);$("status").textContent=message;draw(p);
+ $("frame").textContent=f.states.map(x=>x.sign+" : "+x.role+" | "+x.kelvin.toFixed(4)+" K").join("\n")+
+ "\n\nTernary states are dimensionless.\nCMB is context, not a local Planck thermostat.";
+ const prior=run.points[Math.min(index+1,run.points.length-1)];
+ const check=index<run.points.length-1?scalingInvariant(p.gapM,prior.gapM):scalingInvariant(run.points[0].gapM,run.points[1].gapM);
+ $("invariants").textContent="Ideal E ~ −L⁻³\nIdeal pressure ~ −L⁻⁴\nDimensionless αG ~ L⁻²\n\nAdjacent ratio: "+compact(check.ratio)+
+ "\nPressure ratio: "+compact(check.pressureRatio)+"\nEnergy ratio: "+compact(check.energyRatio)+
+ "\nGravity coupling ratio: "+compact(check.gravitationalRatio)+"\nSymbolic power-law check: "+check.passed;
+ $("audit").textContent="Gap regime: "+p.interpretation+"\nIdeal model E: "+compact(p.idealEnergyJ)+" J\nThermal/Casimir scale ratio: "+compact(p.thermalRatio)+
+ "\nPlanck length: "+compact(PLANCK_M)+" m\nCMB backdrop: "+CMB_K+" K\nPhysically validated at this scale: "+p.physicalPredictionValidated+
+ "\nPhysical evidence claimed: "+a.physicalEvidenceClaimed+
+ "\nNumber of generations: "+a.generations+"\nFrame: {-1, [0, (+1)]}";
+ $("ledger").textContent=run.points.map((q,i)=>(i===index?"● ":"  ")+String(i).padStart(2,"0")+" L="+compact(q.gapM)+"m"+
+ " P="+compact(q.idealPressurePa)+"Pa αG="+compact(q.alphaG)).join("\n");
+}
+$("slider").oninput=e=>{index=Number(e.target.value);render("Physical scale generation selected")};
+$("next").onclick=()=>{index=Math.min(index+1,run.points.length-1);render("Separation reduced")};
+$("previous").onclick=()=>{index=Math.max(0,index-1);render("Separation increased")};
+$("planck").onclick=()=>{index=run.points.length-1;render("Planck bound reached: extrapolation only")};
+$("reset").onclick=()=>{index=0;render("Zeptometer baseline restored")};render("Ready: select a scale to inspect the idealized power laws");
+</script></body></html>
