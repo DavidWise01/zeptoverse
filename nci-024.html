@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NCI-024 · Homeostatic Thermal Feedback Kernel</title>
+<style>:root{color-scheme:dark;font:16px system-ui;background:#07101e;color:#ecfaff}*{box-sizing:border-box}body{max-width:1150px;margin:auto;padding:24px}h1{color:#85ffe0}p{color:#b4cedc;line-height:1.5}section{padding:17px;background:#102038;border:1px solid #365b73;border-radius:16px;margin:15px 0}button{color:white;background:#165164;border:1px solid #5a9fa8;border-radius:10px;padding:10px 14px;margin:4px;cursor:pointer}pre{color:#c0eaff;white-space:pre-wrap;overflow-wrap:anywhere}a{color:#7df7d9}.notice{color:#ffd19a}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.tile{padding:12px;border:1px solid #3c6479;border-radius:10px}.value{color:#8affdf;font-size:1.5rem;font-weight:bold}input{max-width:160px;width:100%;padding:8px;border:1px solid #58808e;background:#0c1b2c;color:white;border-radius:8px}</style></head><body>
+<p>DAVIDWISE01 / ZEPTOVERSE / NCI-024 / EXECUTABLE KERNEL</p>
+<h1>Finite Reservoirs · Homeostatic Thermal Feedback</h1>
+<p>Cold and hot reservoirs now have finite capacities. Their temperatures respond to Peltier pumping, Joule heating and passive thermal leakage, while a balanced-ternary controller chooses PUMP (−1), COAST (0) or STOP (+1).</p>
+<section><h2>Thermal decision engine</h2><pre>   COLD (finite Cc) ⇄ PELTIER ⇄ HOT (finite Ch)
+           │             ↑             │
+           └──── FEEDBACK ┼─────────────┘
+                         │
+             −1 PUMP / 0 COAST / +1 STOP
+                         │
+             FIRST + SECOND LAW AUDIT
+                         │
+                 CASIMIR A / B / C
+                 (unchanged subsystem)</pre>
+<div class="metrics" id="metrics"></div><p><label>Target cold temperature (K): <input id="target" type="number" step=".01" min="1" value="289.9"/></label> <button id="setTarget">New genesis with target</button></p>
+<button id="step">Automatic 1-second iteration</button><button id="run">Run 100 bounded steps</button><button id="pump">Force PUMP</button><button id="coast">Force COAST</button><button id="stop">Force STOP</button><button id="bad">Invalid step test</button><button id="reset">Reset</button><p id="status" aria-live="polite"></p></section>
+<section><h2>Conserved energy and entropy</h2><pre id="audit"></pre>
+<p class="notice">The STOP state assumes an ideal insulated switch. Real devices leak heat, and a practical controller needs finite switching speed, measurement noise, and thermal contact losses. This is a deterministic finite-reservoir simulation, not a Casimir-powered thermal engine or measured Ice IX behavior.</p></section>
+<section><h2>Append-only witness ledger</h2><pre id="events"></pre>
+<p><a href="./kernel/nci-024-kernel.mjs">Actual kernel source</a> · <a href="./kernel/nci-024.test.mjs">Node invariant tests</a> · <a href="./nci-023.html">Previous fixed-temperature driver</a></p></section>
+<script type="module">
+import {initialize,choose,step,attempt,iterate,audit} from "./kernel/nci-024-kernel.mjs";
+const $=x=>document.getElementById(x),format=x=>Number(x).toFixed(4);
+let s=initialize();
+function render(label){const v=audit(s),decision=choose(s);$("status").textContent=label;
+$("metrics").innerHTML=[["Cold temperature",format(s.coldK)+" K"],["Hot temperature",format(s.hotK)+" K"],["Electrical store",format(s.electricalJ)+" J"],["Next action",decision.sign+" / "+decision.mode]].map(([k,value])=>'<div class="tile">'+k+'<div class="value">'+value+'</div></div>').join("");
+$("audit").textContent="Automatic decision: "+decision.mode+" ("+decision.reason+")\nCold capacity: "+s.heatCapacityColdJperK+" J/K\nHot capacity: "+s.heatCapacityHotJperK+" J/K\nCombined energy residual: "+v.energyResidualJ.toExponential(6)+" J\nFinite-reservoir entropy produced: "+v.entropyProducedJperK.toExponential(6)+" J/K\nSecond law: "+(v.entropyProducedJperK>=0?"PASS":"FAIL")+"\nConserved Casimir roots: "+v.triad.roots.join(", ")+"\nGeneration: "+v.events;
+$("events").textContent=s.history.length?s.history.slice(-35).map(e=>e.seq+" "+e.type+" "+JSON.stringify(e)).join("\n"):"Genesis; no transitions";
+}
+function run(fn,message){try{s=fn(s);render(message)}catch(e){render("Not applied: "+e.message)}}
+$("step").onclick=()=>run(x=>step(x,1),"Automatic step");
+$("run").onclick=()=>{try{const result=iterate(s,100,1);s=result.state;render(result.steps+" steps / "+result.reason)}catch(e){render("Not applied: "+e.message)}};
+$("pump").onclick=()=>run(x=>step(x,1,"PUMP"),"Manually pumped");
+$("coast").onclick=()=>run(x=>step(x,1,"COAST"),"Coasted through thermal contact");
+$("stop").onclick=()=>run(x=>step(x,1,"STOP"),"Ideal thermal isolation");
+$("bad").onclick=()=>{const r=attempt(s,-1);s=r.state;render("Rejected: "+r.reason)};
+$("reset").onclick=()=>{s=initialize();$("target").value="289.9";render("New genesis")};
+$("setTarget").onclick=()=>{try{s=initialize({targetColdK:Number($("target").value)});render("New target at genesis")}catch(e){render(e.message)}};
+render("Ready");
+</script></body></html>
