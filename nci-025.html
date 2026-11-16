@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NCI-025 · Thermal Hysteresis and Prediction Kernel</title><style>:root{color-scheme:dark;background:#07111e;color:#e8faff;font:16px system-ui}*{box-sizing:border-box}body{max-width:1100px;margin:auto;padding:24px}h1{color:#88ffe2}p{color:#bcd3df;line-height:1.55}section{background:#11213a;border:1px solid #365e75;padding:18px;border-radius:15px;margin:15px 0}button{background:#1a5266;color:white;border:1px solid #559baa;padding:11px 13px;border-radius:10px;margin:4px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#bde7eb}a{color:#86f3dd}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:9px}.tile{border:1px solid #376075;border-radius:10px;padding:12px}.value{color:#82ffe0;font-size:1.4rem;font-weight:bold}.warn{color:#f6cc8a}</style></head><body><p>ZEPTOVERSE / EXECUTABLE KERNEL / NCI-025</p><h1>Thermal Memory · Hysteresis and Predictive Feedback</h1><p>Two layers: physical reservoirs obey the same NCI-024 thermal laws; the control ledger independently learns the observed cooling slope and uses hysteresis to resist rapid switching. All choices, forecasts and prediction errors remain in the event history.</p>
+<section><h2>Feedback controller</h2><pre>  SENSE temperatures ──▶ hysteretic selector
+                                 │
+                       -1 PUMP | 0 COAST | +1 STOP
+                                 │
+                   PREDICT new cold temperature
+                                 │
+                RUN unchanged thermal physics
+                                 │
+                    COMPARE forecast to reality
+                                 │
+                   UPDATE policy estimate ONLY
+                                 │
+                      NEXT GENERATION</pre>
+<div class="stats" id="stats"></div><button id="one">One generation</button><button id="ten">Ten generations</button><button id="forty">Forty generations</button><button id="reset">Reset</button><p id="status" aria-live="polite"></p></section>
+<section><h2>Prediction quality and thermodynamic audit</h2><pre id="audit"></pre><p class="warn">The model learns a local temperature slope for a synthetic, deterministic simulation—not a new physical law. Prediction quality need not improve in every generation when operating modes or temperatures change.</p></section>
+<section><h2>Append-only predictions and observations</h2><pre id="log"></pre><p><a href="./kernel/nci-025-kernel.mjs">Executable controller source</a> · <a href="./kernel/nci-025.test.mjs">Regression tests</a> · <a href="./nci-024.html">Previous finite-reservoir kernel</a></p></section>
+<script type="module">
+import {begin,choose,observe,iterate,audit} from "./kernel/nci-025-kernel.mjs";
+const $=id=>document.getElementById(id),fmt=x=>Number(x).toFixed(5);
+let state=begin();
+function render(message){const result=audit(state),action=choose(state);$("status").textContent=message;
+ $("stats").innerHTML=[["Cold reservoir",fmt(state.physical.coldK)+" K"],["Hot reservoir",fmt(state.physical.hotK)+" K"],["Electrical budget",fmt(state.physical.electricalJ)+" J"],["Next decision",action.mode]].map(([k,v])=>'<div class="tile">'+k+'<div class="value">'+v+'</div></div>').join("");
+ $("audit").textContent="Generations: "+result.generation+"\nController latch: "+result.latch+"\nLearned slopes K/s: "+JSON.stringify(result.learnedSlopes)+"\nSamples: "+JSON.stringify(result.sampleCounts)+"\nMean prediction absolute error: "+(result.meanAbsolutePredictionErrorK===null?"none":fmt(result.meanAbsolutePredictionErrorK)+" K")+"\nLatest prediction absolute error: "+(result.lastAbsolutePredictionErrorK===null?"none":fmt(result.lastAbsolutePredictionErrorK)+" K")+"\nEnergy residual: "+result.physical.energyResidualJ.toExponential(4)+" J\nEntropy production: "+result.physical.entropyProducedJperK.toExponential(4)+" J/K\nConserved Casimir roots: "+result.physical.triad.roots.join(", ");
+ $("log").textContent=state.history.length?state.history.slice(-35).map(e=>"#"+e.seq+" "+e.requestedMode+" ["+e.trigger+"] predicted="+fmt(e.predictedK)+" K observed="+fmt(e.observedK)+" K error="+fmt(e.errorK)+" K").join("\n"):"GENESIS: no measurements yet.";
+}
+function apply(fn,label){try{state=fn(state);render(label)}catch(e){render("Not applied: "+e.message)}}
+$("one").onclick=()=>apply(s=>observe(s,1),"Completed one observation");
+$("ten").onclick=()=>apply(s=>iterate(s,10,1),"Completed ten observations");
+$("forty").onclick=()=>apply(s=>iterate(s,40,1),"Completed forty observations");
+$("reset").onclick=()=>{state=begin();render("Reset to genesis")};render("Ready");
+</script></body></html>
