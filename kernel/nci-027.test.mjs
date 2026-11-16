@@ -1,0 +1,32 @@
+import assert from "node:assert/strict";
+import {begin,makePacket,acquire,inspect,checkpoint,audit,demoPackets,demonstration} from "./nci-027-kernel.mjs";
+let s=begin(),base=JSON.stringify(s);
+for(const p of demoPackets()){const r=acquire(s,p);assert.equal(r.accepted,true);s=r.state}
+assert.equal(JSON.stringify(begin()),base);
+const eligible=inspect(s,"therm-001");
+assert.equal(eligible.status,"STRUCTURALLY_ELIGIBLE");
+assert.equal(eligible.structurallyIndependent,true);
+assert.equal(eligible.valuesAgree,true);
+assert.equal(eligible.timeAgree,true);
+assert.equal(eligible.trusted,false);
+assert.equal(eligible.authenticated,false);
+const checked=checkpoint(s,"therm-001");
+assert.equal(checked.state.checkpoints.length,1);
+assert.equal(checked.state.checkpoints[0].seal,null);
+assert.equal(audit(checked.state).trusted,false);
+const replay=acquire(s,demoPackets()[0]);
+assert.equal(replay.reason,"REPLAY");
+assert.equal(replay.state.packets.length,3);
+assert.equal(replay.state.events.at(-1).type,"REJECT");
+const sameSensor=acquire(s,makePacket({eventId:"therm-001",sensorId:"SENSOR-A",
+ rootId:"DIFFERENT",valueK:290,timestampMs:100000,nonce:"other"}));
+assert.equal(sameSensor.reason,"DUPLICATE_SENSOR_EVENT");
+assert.equal(demonstration({shared:true}).decision.status,"SHARED_ANCESTRY");
+assert.equal(demonstration({skew:true}).decision.status,"TIME_SKEW");
+assert.equal(demonstration({disagree:true}).decision.status,"VALUE_DISAGREEMENT");
+assert.equal(inspect(begin(),"therm-001").status,"COUNT_MISMATCH");
+assert.deepEqual(demonstration(),demonstration());
+assert.throws(()=>makePacket({sensorId:"X",rootId:"R",valueK:290,timestampMs:0,nonce:""}),/identity/);
+const bad=JSON.parse(JSON.stringify(checked.state));bad.checkpoints[0].trusted=true;
+assert.throws(()=>audit(bad),/unearned/);
+console.log("NCI-027 PASS: 3-source structural gate, shared ancestry, timestamp disagreement, replay and false-trust veto");
