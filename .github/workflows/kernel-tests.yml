@@ -55,3 +55,5 @@ jobs:
         run: node kernel/nci-029.test.mjs
       - name: NCI-030 uncertainty intervals and ancestry-gated consensus
         run: node kernel/nci-030.test.mjs
+      - name: NCI-031 correlated uncertainty and non-averaging common-mode floor
+        run: node kernel/nci-031.test.mjs
