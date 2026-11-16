@@ -133,7 +133,7 @@ export async function syntheticDemo({shared=false,disagree=false,skew=false,tamp
    rootId:shared?"ROOT-SHARED":"ROOT-"+i,measurementId:"MEASURE-"+i,
    upstreamRoots:shared?["SHARED-DATA-PIPELINE"]:[],
    valueK:290+((disagree&&i===2)?1:0.005*i),
-   timestampMs:99000+(skew?800*i:100*i),nonce:"nonce-"+i},pairs[i].privateKey);
+   timestampMs:(skew?97000+800*i:99000+100*i),nonce:"nonce-"+i},pairs[i].privateKey);
   if(tamper&&i===2)packet.valueK+=1;
   state=(await acquire(state,packet)).state;
  }
