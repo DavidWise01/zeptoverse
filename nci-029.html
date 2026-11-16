@@ -1,0 +1,47 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071426"><title>NCI-029 · Hardware-Origin Evidence | Zeptoverse</title><style>:root{color-scheme:dark;background:#06101e;color:#ebfcff;font:15px/1.5 system-ui}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#184153 0,#071322 48%,#050a14 100%);min-height:100vh}header,main,footer{max-width:1450px;margin:auto;padding:22px 25px}h1{font-size:clamp(2rem,4vw,3.6rem);margin:4px 0;color:#a4ffe8}.eyebrow{letter-spacing:.19em;color:#7af5dc;font-size:.82rem}p{color:#acc9db;line-height:1.58}a{color:#8cffdc}.columns{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.card{border:1px solid #335672;background:#102238e8;border-radius:17px;padding:18px;margin-bottom:16px;box-shadow:0 12px 40px #0004}.controls{display:flex;gap:7px;flex-wrap:wrap}button{cursor:pointer;border:1px solid #5996aa;background:#13465f;color:white;padding:11px 13px;border-radius:10px}button:hover{background:#1d6475}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}.metric{border:1px solid #34637a;border-radius:11px;padding:11px}.metric strong{display:block;font-size:1.28rem;color:#89ffdf;overflow-wrap:anywhere}pre{font:12px/1.6 ui-monospace,SFMono-Regular,monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:#b9ebf1;max-height:385px;overflow:auto}canvas{width:100%;height:auto;background:#071729;border:1px solid #2c506a;border-radius:12px}h2{font-size:1.12rem;margin:0 0 11px}.warn{color:#ffcf93}table{width:100%;border-collapse:collapse;font-size:.8rem}td,th{text-align:left;padding:9px;border-bottom:1px solid #345772;overflow-wrap:anywhere}#status{color:#ffda92;min-height:24px}@media(max-width:900px){.columns{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}header,main,footer{padding:14px}}</style></head>
+<body><header><div class="eyebrow">ZEPTOVERSE / ROOT 0 / NCI-029 / SIGNED PROVISIONING CHAIN</div><h1>Three witnesses.<br>Three credential issuers.<br>Still no invented hardware.</h1><p>Run a signed calibration and device identity protocol directly in your browser. P-256 signatures authenticate a declared sensor-identity chain; the kernel separately tracks missing physical attestation.</p><p><a href="./index.html">Zeptoverse homepage</a> · <a href="./nci-028.html">NCI-028 signing layer</a> · <a href="./kernel/nci-029-kernel.mjs">Actual executable kernel</a> · <a href="./kernel/nci-029.test.mjs">Node regression tests</a></p></header>
+<main><section class="card"><h2>Generational trust laboratory</h2><div class="controls"><button id="separate">Create three issuer domains</button><button id="shared">Shared issuer domain</button><button id="tamper">Forge calibration claim</button><button id="expired">Expired calibration</button><button id="disagree">Disagreeing temperature</button><button id="reset">Reset</button></div><p id="status" aria-live="polite">Ready. All cryptographic keys are ephemeral and stay in this session.</p><div class="stats"><div class="metric">Pinned issuers<strong id="issuers">0</strong></div><div class="metric">Provisioned devices<strong id="devices">0</strong></div><div class="metric">Signed readings<strong id="receipts">0</strong></div></div></section>
+<div class="columns"><div><section class="card"><h2>Issuer → device → calibration → observation</h2><canvas id="chain" width="900" height="450" aria-label="Three issuer and device certificate chains converging at a physical trust gate"></canvas></section><section class="card"><h2>Receipt and calibration chain</h2><table><thead><tr><th>Sensor</th><th>Issuer</th><th>Calibration</th><th>Reading</th><th>Device key</th></tr></thead><tbody id="rows"></tbody></table></section></div>
+<div><section class="card"><h2>Trust inspection</h2><pre id="gate"></pre><p class="warn">Independent issuer *labels* and signatures are not proof that three instruments have independently verified hardware roots. The software refuses to issue a trusted physical checkpoint.</p></section><section class="card"><h2>Append-only receipts</h2><pre id="events"></pre></section><section class="card"><h2>Hardware evidence still required</h2><p>For a real deployment: manufacturer-signed attestation with a verified trust chain, independent hardware-backed device keys, signed calibration against recognized standards, authenticated timestamps, and audited independence of upstream measurement equipment.</p><p>This demonstration uses synthetic Kelvin values. It does not establish Planck foam, Ice IX behavior, or a Casimir-powered apparatus.</p></section></div></div></main><footer>NCI-029 · Append-only evidence · P-256 / SHA-256 · Physical trust withheld until independently verified</footer>
+<script type="module">
+import {begin,demo,inspect,audit} from "./kernel/nci-029-kernel.mjs";
+const $=x=>document.getElementById(x),canvas=$("chain"),ctx=canvas.getContext("2d");
+let state=begin(),busy=false;
+function draw(g){
+ ctx.clearRect(0,0,900,450);const colors=["#9ce7ff","#9bffc9","#c9b9ff"];
+ for(let i=0;i<3;i++){
+  const x=160+i*290,issuer="ISSUER-"+i,device="DEVICE-"+i;
+  ctx.strokeStyle=colors[i];ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,107);ctx.lineTo(x,174);ctx.lineTo(x,246);ctx.lineTo(450,343);ctx.stroke();
+  for(const [y,t] of [[65,issuer],[200,device],[261,"CAL-"+i]]){
+   ctx.beginPath();ctx.roundRect(x-91,y-23,182,48,10);ctx.fillStyle="#153247";ctx.fill();ctx.stroke();ctx.textAlign="center";ctx.font="bold 16px ui-monospace,monospace";ctx.fillStyle=colors[i];ctx.fillText(t,x,y+6)
+  }
+ }
+ ctx.beginPath();ctx.roundRect(315,340,270,72,12);ctx.strokeStyle="#eac08e";ctx.fillStyle="#173246";ctx.fill();ctx.stroke();
+ ctx.textAlign="center";ctx.fillStyle="#ffe0aa";ctx.font="bold 16px ui-monospace,monospace";ctx.fillText((g?.status??"NO EVIDENCE"),450,367);ctx.font="13px ui-monospace,monospace";ctx.fillText("PHYSICAL TRUST WITHHELD",450,392);
+}
+function render(message){
+ $("status").textContent=message;const a=audit(state),g=inspect(state,"THERM-029");
+ $("issuers").textContent=a.issuerCount;$("devices").textContent=a.deviceCount;$("receipts").textContent=a.receiptCount;
+ draw(g);const readings=state.receipts.receipts;
+ $("rows").textContent="";readings.forEach(p=>{const c=state.certificates[p.sensorId],tr=document.createElement("tr");
+ [p.sensorId,c.issuerId,c.calibrationId,p.valueK.toFixed(4)+" K",p.signatureHex.slice(0,14)+"…"].forEach(value=>{const td=document.createElement("td");td.textContent=value;tr.append(td)});$("rows").append(tr)});
+ $("gate").textContent="Status: "+g.status+"\nEligible by declared chain: "+(g.eligible??false)+
+ "\nVerified issuer domains: "+(g.issuerDomains?.join(", ")??"n/a")+
+ "\nSeparate domains: "+(g.separateIssuerDomains??false)+
+ "\nWithin calibration: "+(g.calibrationVerified??false)+
+ "\nReading spread: "+(g.spreadK??"n/a")+" K"+
+ "\nHardware attested: false\nPhysical trusted: false\nSeal: NONE";
+ $("events").textContent=state.events.length?state.events.map(e=>e.seq+" "+e.type+" "+(e.sensorId??e.issuerId??"")+" "+(e.reason??"")).join("\n"):"No evidence";
+}
+async function simulate(options,label){
+ if(busy)return;busy=true;$("status").textContent="Creating independent ephemeral credential chains and verifying signatures…";
+ try{const r=await demo(options);state=r.state;render(label+" · "+r.gate.status)}
+ catch(e){render("Error: "+e.message)}finally{busy=false}
+}
+$("separate").onclick=()=>simulate({},"Synthetic separate issuer domains");
+$("shared").onclick=()=>simulate({sharedDomain:true},"Shared issuer domain");
+$("tamper").onclick=()=>simulate({tamperCertificate:true},"Modified calibration field");
+$("expired").onclick=()=>simulate({expired:true},"Expired certificate");
+$("disagree").onclick=()=>simulate({disagree:true},"Temperature disagreement");
+$("reset").onclick=()=>{if(busy)return;state=begin();render("Reset to genesis")};render("Ready");
+</script></body></html>
