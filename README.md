@@ -337,3 +337,20 @@ Independent ternary layer maps *relative separation from genesis* to `-1` for co
 For a quasistatic, lossless idealized plate displacement `a0 → a1`, the change in field interaction energy is `ΔE=E(a1)-E(a0)`. A tracked external-work reservoir is debited by `ΔE`, so `E + reservoir = E_initial` to floating-point tolerance. The ledger records each move and permits moving back to reference; a restored checkpoint receives `1/1 END END`. Invalid nonpositive or nonfinite gaps produce an immutable-style rejection event.
 
 **Model boundary:** finite conductivity, roughness, edge effects, plate elasticity, temperature corrections, dielectric response, inertia, dissipative mechanics, and quantum gravity are not included. No physical Planck-foam three-state model is asserted. Test with `node kernel/nci-021.test.mjs`; publication does not imply CI passed.
+
+## NCI-022 — Three Casimir boundaries, one conserved energy ledger
+
+[Execute the browser kernel](nci-022.html) · [ES source](kernel/nci-022-kernel.mjs) · [Node regression tests](kernel/nci-022.test.mjs).
+
+**Invariant:** `Σ_i E_Casimir(gap_i) + Σ_i stored_work_credit_i + external_reservoir = initial_total`. Three independent ideal parallel-plate gaps are measured in meters, interaction energies in joules, and pressures in pascals. The `−1/0/+1` ternary state is solely relative to the original *gap*, never a kelvin measurement or an independently signed Casimir interaction force.
+
+- **Diatomic:** `diatomic(A,B,gapA,gapB)` changes two physical plate separations in one deterministic action and updates the external reservoir by the negative Casimir interaction-energy change.
+- **Diodic:** `diodic(A,B,J)` permits work-credit transfer in the directed cycle `A→B→C→A`. These transferable credits are abstract, initially supplied energy bookkeeping; no mechanism converting Casimir force directly to stored electrical energy is asserted.
+- **Divisive:** `divisive(B,"main",f,"left","right")` splits a credit account into two children without duplicating energy, lineage or a physical plate. `join` recombines them.
+- **Rejection and evidence:** `attemptDiodic` records prohibited reverse transfers as failed events without mutating physical gaps or stored credits.
+- **Closure:** a signed `1/1 END END` checkpoint requires restoration of all three physical gaps, the original credit account identities and balances, and the external work reservoir.
+- The deterministic test performs paired deformation, (A→B), a credit split/join, (B→C→A), restoration, and ledger closure.
+
+**Limits:** The model assumes perfectly conducting, flat, effectively infinite plates at zero temperature, quasistatic displacements, zero losses, and an illustrative externally supplied credit reservoir. It is **not** a demonstrated Casimir heat engine, thermoelectric power source, physically accurate Ice IX lattice, negative absolute-temperature model, or Planck-foam experiment. More physically useful steps would add measured thermal conductivity, losses and work-to-electricity conversion efficiencies.
+
+Local test command: `node kernel/nci-022.test.mjs`; CI success and Pages publication require independent verification.
