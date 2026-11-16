@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-026 · Three Witness Agreement</title>
+<style>:root{color-scheme:dark;background:#07101d;color:#e8faff;font:16px system-ui}*{box-sizing:border-box}body{max-width:1140px;margin:auto;padding:24px}h1{color:#8dffe6}p{color:#bdd0e0;line-height:1.55}section{padding:18px;border:1px solid #375d7a;background:#122139;border-radius:15px;margin:15px 0}button{padding:11px 14px;border:1px solid #5aa2ac;border-radius:10px;background:#18546b;color:white;cursor:pointer;margin:4px}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#bce8f8}a{color:#80f5dd}.warn{color:#f3cf94}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}.tile{border:1px solid #356075;border-radius:12px;padding:12px}.value{font-size:1.3em;font-weight:bold;color:#87fbe0}</style></head><body><p>ZEPTOVERSE / NCI-026 / EXECUTABLE THREE-WITNESS GATE</p>
+<h1>Three Algorithms ≠ Three Independent Witnesses</h1><p>The runnable kernel compares a physics-based temperature forecast, an adaptive learned forecast, and a post-step conservation reconstruction. They are distinct methods, but all inspect the same simulation run. Their original ancestry is preserved in each evidence packet.</p>
+<section><h2>Witness topology</h2><pre>                [ NCI-024 SIMULATION ]
+                           |
+              +------------+-------------+
+              |            |             |
+         PHYSICS       LEARNED       CONSERVATION
+          forecast       policy       reconstruction
+              |            |             |
+              +------------+-------------+
+                           |
+                AGREEMENT / ROOT TRACE
+                           |
+                  3 methods, 1 root
+                           |
+                  NOT INDEPENDENT
+                           |
+               [ CHECKPOINT UNTRUSTED ]</pre>
+<button id="step">Observe next thermal transition</button><button id="five">Observe 5 generations</button><button id="reset">Reset evidence chain</button><p id="status" aria-live="polite"></p><div class="stats" id="metrics"></div></section>
+<section><h2>Three prediction packets</h2><pre id="packets"></pre></section>
+<section><h2>Agreement and conservation audit</h2><pre id="audit"></pre><p class="warn">The conservation reconstruction uses post-step data, so it is an audit and not an independent prospective temperature forecast. Distinct calculations of one simulated event do not supply three independent sensor or experimental ancestries.</p></section>
+<section><h2>Append-only gate history</h2><pre id="history"></pre><p><a href="./kernel/nci-026-kernel.mjs">Executable kernel module</a> · <a href="./kernel/nci-026.test.mjs">Node regression tests</a> · <a href="./nci-025.html">Previous hysteretic controller</a></p></section>
+<script type="module">
+import {begin,cycle,iterate,audit} from "./kernel/nci-026-kernel.mjs";
+const $=id=>document.getElementById(id),f=x=>Number(x).toFixed(6);
+let s=begin();
+function render(message){
+ const a=audit(s),g=a.lastGate,packets=s.packets.slice(-3);
+ $("status").textContent=message;
+ $("metrics").innerHTML=[["Generations",a.generations],["Method packets",a.packets],["Independent roots",g?.independentRoots??0],["Trust gate",g?.status??"NOT_CHECKED"]].map(([k,v])=>'<div class="tile">'+k+'<div class="value">'+v+'</div></div>').join("");
+ $("packets").textContent=packets.length?packets.map(p=>p.kind+" | prediction: "+f(p.predictedK)+" K | observation: "+f(p.observedK)+" K | error: "+f(p.errorK)+" K\n   ancestor: "+p.ancestryRoot+"\n   inputs: "+p.dependsOn.join(" / ")).join("\n\n"):"No observations yet.";
+ $("audit").textContent="Same observed value: "+(g?.observationAgreement??"not yet checked")+"\nForecast spread K: "+(g?f(g.forecastSpreadK):"n/a")+"\nObserved spread K: "+(g?f(g.observedSpreadK):"n/a")+"\nDistinct roots: "+(g?.independentRoots??0)+"\nTrusted: "+(g?.trusted??false)+"\nEnergy residual: "+a.physical.energyResidualJ.toExponential(4)+" J\nEntropy production: "+a.physical.entropyProducedJperK.toExponential(4)+" J/K\nPhysical Casimir roots: "+a.physical.triad.roots.join(", ");
+ $("history").textContent=s.events.length?s.events.map(e=>"#"+e.seq+" "+e.type+" ["+e.status+"] 3 methods, "+e.distinctAncestryRoots+" source root, trusted="+e.trusted).join("\n"):"Genesis — no gates issued";
+}
+function apply(fn,message){try{s=fn(s);render(message)}catch(e){render("Rejected: "+e.message)}}
+$("step").onclick=()=>apply(s=>cycle(s,1),"Recorded one simulated transition and three method packets");
+$("five").onclick=()=>apply(s=>iterate(s,5,1),"Recorded five additional generations");
+$("reset").onclick=()=>{s=begin();render("New genesis")};render("Ready");
+</script></body></html>
