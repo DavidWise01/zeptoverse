@@ -354,3 +354,23 @@ For a quasistatic, lossless idealized plate displacement `a0 → a1`, the change
 **Limits:** The model assumes perfectly conducting, flat, effectively infinite plates at zero temperature, quasistatic displacements, zero losses, and an illustrative externally supplied credit reservoir. It is **not** a demonstrated Casimir heat engine, thermoelectric power source, physically accurate Ice IX lattice, negative absolute-temperature model, or Planck-foam experiment. More physically useful steps would add measured thermal conductivity, losses and work-to-electricity conversion efficiencies.
 
 Local test command: `node kernel/nci-022.test.mjs`; CI success and Pages publication require independent verification.
+
+## NCI-023 — Kelvin–Peltier thermal loss and second-law invariant
+
+[Run the browser kernel](nci-023.html) · [ES module](kernel/nci-023-kernel.mjs) · [Node tests](kernel/nci-023.test.mjs).
+
+Three-boundary Casimir physical and credit accounts from NCI-022 remain a separate subsystem. NCI-023 adds a conventional **ideal thermoelectric cooling module**, with fixed hot/cold reservoir temperatures `Th` and `Tc` in kelvin, constant Seebeck coefficient `α`, current `I`, internal resistance `R`, and thermal conductance `K`. This constant-Seebeck model omits Thomson heating and temperature-dependent material properties.
+
+- Cold heat absorbed: `Qc = α I Tc − ½ I²R − K(Th−Tc)` (watts).
+- Hot heat released: `Qh = α I Th + ½ I²R − K(Th−Tc)` (watts).
+- Electrical input: `P = α I (Th−Tc) + I²R = Qh−Qc` (watts).
+- Entropy generation rate: `Sdot = Qh/Th − Qc/Tc >= 0` in W/K. Joule heating and Fourier thermal leakage contribute positive entropy.
+- Cold-side coefficient of performance `COP = Qc/P` when Qc and P are positive, bounded by the cooling Carnot limit `Tc/(Th−Tc)` for `Th>Tc`.
+
+The `tick(seconds)` operation updates separate cold reservoir, hot reservoir and electrical store energies while preserving the NCI-022 triad energy ledger. Total energy including those accounts is unchanged by the fixed-temperature bookkeeping step. `audit()` asserts both energy conservation and nonnegative total thermal entropy production. `pairCasimir()` allows changing the pair of Casimir gaps while maintaining independent thermal accounts. Invalid time steps append `REJECT` events with no physical change.
+
+**Model caveats:** Fixed temperatures imply ideal large thermal reservoirs. The model does not include finite thermal capacity, electrical conversion of Casimir work, cooling hardware control, material-dependent α/R/K, radiation, friction, gravity, or quantum foam. This is a software verification of textbook formulas, not a demonstrated energy-producing device. The ternary `−1/0/+1` gap signs remain dimensionless and distinct from kelvin.
+
+References: [MathWorks Peltier model](https://www.mathworks.com/help/simscape-electrical/ref/peltierdevice.html) and [Ferrotec thermoelectric equations](https://thermal.ferrotec.com/technology/thermoelectric-reference-guide/thermalRef11/).
+
+Run `node kernel/nci-023.test.mjs`. GitHub CI success requires verification.
