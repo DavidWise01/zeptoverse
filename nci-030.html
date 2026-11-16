@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#061322"><title>NCI-030 | Calibrated Witness Consensus | Zeptoverse</title>
+<style>:root{color-scheme:dark;font:15px/1.5 system-ui;background:#061322;color:#ecfaff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#1a4c60,#071525 45%,#040c17)}header,main,footer{max-width:1400px;margin:auto;padding:22px 25px}h1{font-size:clamp(2rem,4.5vw,3.8rem);line-height:1.15;color:#a5ffdf;margin:5px 0}.kicker{color:#86f9df;letter-spacing:.18em;font-size:.85rem}p{color:#bbd1dd;line-height:1.6}a{color:#83f9db}.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel{background:#0e2438e8;border:1px solid #365d76;border-radius:17px;padding:19px;margin-bottom:16px}h2{font-size:1.1rem;margin:0 0 12px}.controls{display:flex;gap:8px;flex-wrap:wrap}button{border:1px solid #579bad;background:#164b61;color:white;padding:11px 13px;border-radius:9px;cursor:pointer}button:hover{background:#227087}canvas{display:block;width:100%;height:auto;border-radius:12px;background:#061626;border:1px solid #34566f}.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.metric{border:1px solid #376376;border-radius:11px;padding:12px;overflow-wrap:anywhere}.metric strong{display:block;color:#a5ffdf;font-size:1.3rem}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.7 ui-monospace,monospace;color:#b7e8f4;max-height:350px;overflow:auto}.warning{color:#f8ca91}table{border-collapse:collapse;width:100%;font-size:.85rem}td,th{border-bottom:1px solid #37586f;text-align:left;padding:9px}#status{min-height:25px;color:#ffe0a7}@media(max-width:900px){.layout{grid-template-columns:1fr}header,main,footer{padding:14px}.metrics{grid-template-columns:1fr 1fr}}</style></head><body>
+<header><div class="kicker">ROOT 0 / ZEPTOVERSE / EVIDENCE-CARRYING KERNEL NCI-030</div><h1>Three calibrated readings.<br>One common interval.<br>No invented trust.</h1><p>Signed sensor credentials carry declared measurement uncertainties. NCI-030 finds the common Kelvin interval and checks root lineage, separate issuer domains and timestamp agreement before accepting structural consensus.</p><p><a href="./index.html">Zeptoverse homepage</a> · <a href="./nci-029.html">NCI-029 credential chain</a> · <a href="./kernel/nci-030-kernel.mjs">Executable module</a> · <a href="./kernel/nci-030.test.mjs">Regression tests</a></p></header>
+<main><section class="panel"><h2>Generate signed measurement chain</h2><div class="controls"><button id="match">Three compatible readings</button><button id="conflict">Conflicting readings</button><button id="shared">Shared issuer ancestry</button><button id="expired">Expired calibration</button><button id="checkpoint">Record checkpoint</button><button id="reset">Reset</button></div><p id="status" aria-live="polite">Ready: no measurements acquired.</p><div class="metrics"><div class="metric">Signed sensor receipts<strong id="count">0</strong></div><div class="metric">Interval status<strong id="state">OPEN</strong></div><div class="metric">Physical trust<strong id="trust">WITHHELD</strong></div></div></section>
+<div class="layout"><div><section class="panel"><h2>Temperature uncertainty intervals</h2><canvas id="bands" width="980" height="470" role="img" aria-label="Kelvin intervals from three calibrated sensors and the common intersection"></canvas><p class="warning">Certificate uncertainty is modeled as a declared absolute ±K bound, not a standard deviation or validated statistical confidence interval.</p></section><section class="panel"><h2>Evidence packet table</h2><table><thead><tr><th>Sensor</th><th>Reading</th><th>Declared ± bound</th><th>Calibration</th></tr></thead><tbody id="rows"></tbody></table></section></div>
+<div><section class="panel"><h2>Three-witness gate</h2><pre id="gate"></pre></section><section class="panel"><h2>Append-only checkpoints</h2><pre id="events"></pre></section><section class="panel"><h2>Evidence limitations</h2><p>A signed calibration certificate verifies that a pinned issuer signed the claimed uncertainty. It does not independently establish that the uncertainty is accurate or that the physical instruments exist.</p><p>Overlapping intervals describe deterministic bound compatibility; they do not prove three independent physical observations. The physical <code>1/1 END END</code> checkpoint remains withheld.</p></section></div></div></main>
+<footer>Three witness roots · Interval intersection · Explicit ancestry · Deterministic model · No hardware trust claims</footer>
+<script type="module">
+import {demo} from "./kernel/nci-029-kernel.mjs";
+import {begin,checkpoint,classify,audit} from "./kernel/nci-030-kernel.mjs";
+const $=x=>document.getElementById(x),ctx=$("bands").getContext("2d");
+let s=begin(),busy=false;
+function graph(result){
+ const rows=result.witnessIntervals||[],w=980,h=470;
+ ctx.clearRect(0,0,w,h);ctx.font="17px ui-monospace,monospace";
+ ctx.fillStyle="#c2e6f0";ctx.fillText("Kelvin-scale comparison · declared absolute uncertainty",42,40);
+ if(rows.length!==3){ctx.fillText("Generate signed sensor packets to see the overlap.",42,140);return}
+ const min=Math.min(...rows.map(r=>r.lowerK))-.02,max=Math.max(...rows.map(r=>r.upperK))+.02;
+ const x=v=>170+(v-min)/(max-min)*750;
+ for(let i=0;i<=4;i++){const v=min+(max-min)*i/4;ctx.fillStyle="#87bbca";ctx.fillText(v.toFixed(3)+" K",x(v)-34,390);ctx.strokeStyle="#2e5068";ctx.beginPath();ctx.moveTo(x(v),60);ctx.lineTo(x(v),365);ctx.stroke()}
+ const colors=["#8af2e0","#c5aaff","#ffc88d"];
+ rows.forEach((r,i)=>{const y=100+i*100;ctx.fillStyle=colors[i];ctx.fillText(r.sensorId,40,y+6);
+ ctx.fillRect(x(r.lowerK),y-8,Math.max(2,x(r.upperK)-x(r.lowerK)),18);
+ ctx.beginPath();ctx.arc(x(r.centerK),y+1,8,0,Math.PI*2);ctx.fillStyle="#f4faff";ctx.fill();
+ ctx.fillStyle="#b9cddd";ctx.fillText(r.centerK.toFixed(3)+" ± "+r.uncertaintyK.toFixed(3)+" K",560,y-19)});
+ if(result.commonIntersection){ctx.fillStyle="#9effbb";const a=result.commonIntersection;ctx.fillRect(x(a.lowerK),334,Math.max(3,x(a.upperK)-x(a.lowerK)),12)}
+}
+function render(message){
+ $("status").textContent=message;const result=classify(s.chain,"THERM-029"),a=audit(s);
+ $("count").textContent=a.chain.receiptCount;$("state").textContent=result.status;
+ $("trust").textContent="WITHHELD";graph(result);
+ $("rows").replaceChildren();
+ (result.witnessIntervals||[]).forEach(r=>{const tr=document.createElement("tr");
+ [r.sensorId,r.centerK.toFixed(4)+" K","±"+r.uncertaintyK+" K",r.lowerK.toFixed(4)+"–"+r.upperK.toFixed(4)+" K"].forEach(value=>{const td=document.createElement("td");td.textContent=value;tr.append(td)});$("rows").append(tr)});
+ $("gate").textContent="Status: "+result.status+"\nInterval compatible: "+result.compatible+
+ "\nStructurally eligible: "+result.structuralEligibility+"\nReading spread: "+(result.maxCenterSpreadK??"n/a")+" K"+
+ "\nCommon intersection: "+(result.commonIntersection?JSON.stringify(result.commonIntersection):"none")+
+ "\nNominal interval midpoint: "+(result.nominalConsensusK??"n/a")+" K"+
+ "\nPhysical sensor independence verified: false\nTrusted physical checkpoint: false"+
+ "\nSeal: NONE\n";
+ $("events").textContent=s.events.length?s.events.map(e=>e.seq+" "+e.type+" "+e.status+" trusted="+e.trusted).join("\n"):"No checkpoint yet.";
+}
+async function setup(options,label){
+ if(busy)return;busy=true;$("status").textContent="Signing and validating ephemeral calibration certificates…";
+ try{const r=await demo(options);s=begin({chain:r.state});render(label)}catch(e){render("Failed: "+e.message)}finally{busy=false}
+}
+$("match").onclick=()=>setup({},"Compatible three-sensor interval");
+$("conflict").onclick=()=>setup({disagree:true},"Conflicting signed readings");
+$("shared").onclick=()=>setup({sharedDomain:true},"Shared issuer ancestry");
+$("expired").onclick=()=>setup({expired:true},"Expired calibration fixture");
+$("checkpoint").onclick=()=>{const result=checkpoint(s,"THERM-029");s=result.state;render("Checkpoint: "+result.decision.status+"; physical trust withheld")};
+$("reset").onclick=()=>{if(busy)return;s=begin();render("New genesis")};render("Ready");
+</script></body></html>
