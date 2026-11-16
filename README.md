@@ -321,3 +321,19 @@ The kernel now preserves the canonical **`{-1, [0, (+1)]}`** set. The three digi
 - `kernel/nci-020.test.mjs` checks signed digits, 1/3/9/27 generation sizes, inverse rotations, pair operations, rejection, checkpoint and replay.
 
 **Bound:** This models a nested signed-state algebra and bookkeeping across scale, not a physically validated Casimir/quantum-foam law. A physically faithful follow-up needs measurable energy units, boundary conditions and separate thermodynamic variables.
+
+## NCI-021 — Signed boundary force kernel in SI units
+
+[Executable browser lab](nci-021.html) · [physical kernel module](kernel/nci-021-kernel.mjs) · [Node invariant tests](kernel/nci-021.test.mjs).
+
+Physical layer uses the standard ideal, perfectly conducting, zero-temperature, parallel-plate Casimir solution for separation `a` and plate area `A`:
+- `E(a) = -π² ħ c A / (720 a³)` in joules.
+- `P(a) = -π² ħ c / (240 a⁴)` in pascals, always attractive (negative for the chosen gap coordinate).
+- `F(a) = P(a) A` in newtons.
+Sources: [NIST Casimir measurements review](https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=906575); [Casimir-energy formula review](https://www.osti.gov/servlets/purl/1850190).
+
+Independent ternary layer maps *relative separation from genesis* to `-1` for compressed, `0` for unchanged, `+1` for expanded. These numbers are **not kelvin**, nor do they imply that the attractive force reverses sign at `+1`.
+
+For a quasistatic, lossless idealized plate displacement `a0 → a1`, the change in field interaction energy is `ΔE=E(a1)-E(a0)`. A tracked external-work reservoir is debited by `ΔE`, so `E + reservoir = E_initial` to floating-point tolerance. The ledger records each move and permits moving back to reference; a restored checkpoint receives `1/1 END END`. Invalid nonpositive or nonfinite gaps produce an immutable-style rejection event.
+
+**Model boundary:** finite conductivity, roughness, edge effects, plate elasticity, temperature corrections, dielectric response, inertia, dissipative mechanics, and quantum gravity are not included. No physical Planck-foam three-state model is asserted. Test with `node kernel/nci-021.test.mjs`; publication does not imply CI passed.
