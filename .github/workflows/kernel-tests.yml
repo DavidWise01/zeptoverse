@@ -57,3 +57,5 @@ jobs:
         run: node kernel/nci-030.test.mjs
       - name: NCI-031 correlated uncertainty and non-averaging common-mode floor
         run: node kernel/nci-031.test.mjs
+      - name: NCI-032 CMB-reference ternary zepto-to-Planck physics scale checks
+        run: node kernel/nci-032.test.mjs
