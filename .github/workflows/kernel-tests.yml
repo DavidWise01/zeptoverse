@@ -39,3 +39,5 @@ jobs:
         run: node kernel/nci-021.test.mjs
       - name: NCI-022 triadic boundaries and single-ledger conservation
         run: node kernel/nci-022.test.mjs
+      - name: NCI-023 thermoelectric work, heat and entropy
+        run: node kernel/nci-023.test.mjs
