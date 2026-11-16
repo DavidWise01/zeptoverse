@@ -25,7 +25,7 @@ assert.equal(demo.gate.eligible,true);
 assert.equal(demo.gate.physicallyIndependent,false);
 assert.equal(demo.gate.seal,null);
 assert.equal(audit(demo.state).physicalWitnessesAuthenticated,0);
-assert.equal(demo.state.checkpoints.length,0);
+assert.equal(demo.state.checkpoints.length,1);
 assert.equal(audit(demo.state).receipts,3);
 const checked=checkpoint(demo.state,"THERM-1");
 assert.equal(checked.state.checkpoints[0].trustedPhysicalObservation,false);
