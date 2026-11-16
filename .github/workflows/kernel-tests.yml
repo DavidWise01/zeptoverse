@@ -61,3 +61,5 @@ jobs:
         run: node kernel/nci-032.test.mjs
       - name: NCI-033 Dirichlet box and flat torus scalar eigenmode spectrum
         run: node kernel/nci-033.test.mjs
+      - name: NCI-034 canonical gyro brace box torroid coupled spectral lock
+        run: node kernel/nci-034.test.mjs
