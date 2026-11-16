@@ -418,3 +418,21 @@ The **physical state** continues to use the NCI-024 finite-capacity Peltier/Joul
 The hysteresis prevents a *specific kind* of chattering at the switching threshold, but does not guarantee global convergence, optimal control, exact predictions, or stability in arbitrary physical conditions. The rate estimation learns only from deterministic synthetic NCI-024 observations. This is **not** a physical Planck-foam memory effect.
 
 Run: `node kernel/nci-025.test.mjs`. A code commit is not evidence of successful CI or live Pages availability.
+
+## NCI-026 — Three methods, shared source ancestry, no false three-witness trust
+
+[Browser-run executable kernel](nci-026.html) · [Module source](kernel/nci-026-kernel.mjs) · [Node tests](kernel/nci-026.test.mjs).
+
+The checkpoint gate now records **three method-specific packets for the same NCI-024/NCI-025 finite-reservoir transition**:
+
+1. **PHYSICS:** an independent *calculation path* through the Kelvin–Peltier rate formula before the simulated step.
+2. **LEARNED:** NCI-025's predeclared, prior-history-adapted forecast.
+3. **CONSERVATION:** reconstructs the cold reservoir temperature using the observed hot-side/electrical state and first-law energy balance **after** the step. It is a post-hoc consistency check, not a prospective forecast.
+
+Each packet includes method name, predicted or reconstructed K, observed K, prediction error, dependencies, generation, and root-of-source ancestry. The gate compares predicted and observed value ranges to explicit tolerances and identifies shared roots. **All three packets in the built-in demo share the same NCI-024 simulated observation ancestry.** Consequently `status=SHARED_ANCESTRY` and `trusted=false`, even if their readings agree.
+
+The generic `agreement` checker can report `ELIGIBLE_NOT_VERIFIED` for three packets with distinct *declared* root labels and agreeing results, but it still never sets `trusted=true`, because the kernel cannot authenticate external sensor ancestry by accepting arbitrary strings. Duplicate or correlated evidence is not independent corroboration.
+
+Conservation and positive-entropy obligations remain delegated to the NCI-024 physical layer. This does not establish three actual independent observations, Ice IX physics, quantum-gravity evidence, or a physical sensing device.
+
+Run `node kernel/nci-026.test.mjs`. Automated CI success and live GitHub Pages publication must be verified separately.
