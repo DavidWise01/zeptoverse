@@ -512,3 +512,21 @@ For `σ_i=0.01 K` and `σ_common=0.02 K`, three repeated measurements reduce onl
 `evaluate` additionally checks the inherited NCI-030 **signed absolute-bound interval compatibility**, issuer-domain and source-root structural independence and timestamp checks. It can return `CORRELATION_ACCOUNTED` or refuse a fixture with `SHARED_ISSUER_DOMAIN` or `INTERVAL_CONFLICT`. The statistical sigma sidecar is not signed by a calibration authority, and the example assumptions are neither measured nor instrument-validated. Thus every NCI-031 checkpoint is untrusted for **physical** independence and stays unsealed. This is a mathematical covariance demonstration, not a validated measurement uncertainty budget.
 
 The full Pages lab includes generated signed-credential fixtures, covariance bar chart, separate uncertainty decomposition, root audit and append-only checkpoint events. Run `node kernel/nci-031.test.mjs` using Node 22+; CI completion and live Pages deployment require separate confirmation.
+
+## NCI-032 — Cosmic-background coordinate frame and zepto-to-Planck physics
+
+[Full executable physics laboratory](nci-032.html) · [ES-module source](kernel/nci-032-kernel.mjs) · [Node tests](kernel/nci-032.test.mjs).
+
+**Canonical fixed ternary frame:** `{-1, [0, (+1)]}`, where `−1` means cosmic background, `0` means local reference singlet, and `+1` means a positive departure from that reference. These are *dimensionless categorical operators*, never negative/zero/positive kelvins. A contextual CMB temperature of `2.7255 K` is used as an environmental anchor but is **not imposed as a Planck-scale microscopic thermostat**.
+
+The executable kernel sweeps a characteristic idealized plate separation `L` from `10^-21 m` toward `ℓ_P≈1.616255×10^-35 m` in deterministic factors of 10, stopping at the Planck cutoff. Using NCI-021's standard parallel-plate, perfect-conductor zero-temperature mathematical model:
+- `E_Casimir = −π² ħc A/(720 L³)`, in joules
+- `P_Casimir = −π² ħc/(240 L⁴)`, in pascals
+- `α_G(L)=(ℓ_P/L)²`, dimensionless, defined as a simple Planck-to-length scale parameter, **not a confirmed quantum-gravity prediction**
+- `thermalRatio = k_B T_CMB L/(ħc)`, dimensionless, to compare CMB thermal energy against the field's `ħc/L` scale
+
+`scalingInvariant` tests `P∝L^-4`, `E∝L^-3`, `α_G∝L^-2`. `audit` checks generation ordering, invariant ternary role mapping, negative attractive ideal pressure and explicit nonvalidation at every simulated scale.
+
+**Physical validity warning:** mathematical extrapolation of ideal Casimir plates to zeptometers or Planck lengths is **not a physically validated continuum conducting-surface calculation**. Perfect conductor, macroscopic plane and local boundary assumptions become invalid far before these separations. The Planck scale is a boundary where the known semiclassical/field descriptions may be inadequate; the kernel does not claim to calculate genuine fluctuating spacetime geometry. Plate area is held fixed solely for an algebraic scaling test.
+
+Constants reference: [NIST 2022 CODATA recommended physical constants](https://physics.nist.gov/cuu/Constants/); ideal parallel-plane Casimir formula [Stanford-hosted physics reference](https://stanford.edu/~oas/SI/QM/papers/CasimirEffectPaper.pdf). Run `node kernel/nci-032.test.mjs` using Node 22+. A committed Pages workflow is not proof of successful deployment or automated tests.
