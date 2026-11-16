@@ -436,3 +436,20 @@ The generic `agreement` checker can report `ELIGIBLE_NOT_VERIFIED` for three pac
 Conservation and positive-entropy obligations remain delegated to the NCI-024 physical layer. This does not establish three actual independent observations, Ice IX physics, quantum-gravity evidence, or a physical sensing device.
 
 Run `node kernel/nci-026.test.mjs`. Automated CI success and live GitHub Pages publication must be verified separately.
+
+## NCI-027 — Independent witness acquisition, replay protection and declared-source limits
+
+[Execute the interactive witness kernel](nci-027.html) · [Source](kernel/nci-027-kernel.mjs) · [Node tests](kernel/nci-027.test.mjs).
+
+**Inputs:** Three sensor packets must identify the same event, their sensor, root, upstream dependencies, timestamp (integer milliseconds), observation (kelvin), and unique nonce. The kernel receives these fields as declared data; this edition does not have a hardware connector, device identity attestation, signed telemetry receipts, authenticated clocks or an external data feed.
+
+**Process:**
+- `acquire` validates packet fields; refuses a repeated sensor/nonce and a second reading from the same sensor for one event; appends `REJECT` evidence without modifying accepted packets.
+- `inspect` requires exactly three accepted packets for the event; uses shared root and upstream ancestry intersections to detect correlated observation claims; tests specified reading tolerance and timestamp skew.
+- `STRUCTURALLY_ELIGIBLE` means only the declared packet graph has three disjoint root sets with similar observations in the time window. It is **not a trusted checkpoint**.
+- `checkpoint` preserves structural eligibility or failure status but leaves `trusted=false` and `seal=null` for every packet because external origin authenticity has not been established.
+- `audit` verifies source receipt/event accounting and rejects forged success seals.
+
+The browser demonstration offers four **synthetic fixtures**: three declared distinct sources, shared upstream ancestry, timestamp skew and value disagreement. None are real independent measurements or proof of Ice IX, Casimir-driven power, Planck foam or thermodynamic material behavior.
+
+**Natural next requirement:** authenticated independent instrument origin, signed event evidence, calibrated timestamps, measurements with uncertainties, and lineage roots that survive upstream auditing; only then consider a verified `1/1 END END` witness seal. Run `node kernel/nci-027.test.mjs`. Source publication does not imply the test run or GitHub Pages deployment succeeded.
