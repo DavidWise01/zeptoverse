@@ -401,3 +401,20 @@ The controller uses a specified deadband, an upper hot-temperature cutoff and a 
 **Limits:** STOP assumes an ideal isolation switch, and constant thermal coefficients and capacities are approximations. Explicit-Euler time integration is suitable only for sufficiently small steps, which the kernel checks in part through thermodynamic invariants. This is not an experimental device, nor any demonstration of Planck foam or Ice IX quantum learning. Coupled Casimir boundaries are carried unchanged from NCI-022 and keep their independent internal conservation audit.
 
 Run: `node kernel/nci-024.test.mjs`. CI success and live GitHub Pages serving require separate verification.
+
+## NCI-025 — Hysteresis and predicted-versus-observed thermal feedback
+
+[Runnable interactive HTML](nci-025.html) · [Executable module](kernel/nci-025-kernel.mjs) · [Node tests](kernel/nci-025.test.mjs).
+
+The **physical state** continues to use the NCI-024 finite-capacity Peltier/Joule/Fourier reservoir model. NCI-025 adds a separate **controller policy** that retains (1) an operating-mode latch, (2) bounded switching thresholds, and (3) mode-specific estimates of the cold-side temperature slope, in K/s.
+
+- **PUMP (−1)** activates above `target + onBand`, and if latched remains on until the cold reservoir reaches `target − offBand`, provided sufficient electrical power and safe hot-side temperature exist.
+- **COAST (0)** allows passive conductive contact when the cold reservoir is below `target − coastBand`.
+- **STOP (+1)** uses the prior ideal isolation abstraction inside the target band, at a hot-temperature cutoff or without cooling power.
+- **Prediction:** `predicted_Tc' = Tc + estimatedSlope[mode] × Δt`; after the physical `step`, record `error=observed−predicted`. Update only the policy slope by an exponential average `newEstimate=(1−α)×prior+α×measuredSlope`. The physics is not revised by a bad forecast.
+- **Witness history:** every observation records the selected mode, cause, predicted temperature, observed temperature, error, old/new slope, and underlying physical event sequence. Source states remain unchanged; returned states append evidence.
+- **Verification:** the tests assert the hysteresis hold, local prediction-error reduction under similar consecutive pumping conditions, energy conservation, second-law consistency, upper thermal cutoff, zero-budget fallback and deterministic replay.
+
+The hysteresis prevents a *specific kind* of chattering at the switching threshold, but does not guarantee global convergence, optimal control, exact predictions, or stability in arbitrary physical conditions. The rate estimation learns only from deterministic synthetic NCI-024 observations. This is **not** a physical Planck-foam memory effect.
+
+Run: `node kernel/nci-025.test.mjs`. A code commit is not evidence of successful CI or live Pages availability.
