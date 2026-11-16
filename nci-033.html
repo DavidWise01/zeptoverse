@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#070f24"><title>NCI-033 · Box vs Flat Toroid | Zeptoverse Physics</title>
+<style>:root{color-scheme:dark;background:#070d1d;color:#e8faff;font:15px/1.55 system-ui}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -25%,#1b3e65 0,#080f22 46%,#060b19 100%);min-height:100vh}header,main,footer{max-width:1440px;margin:auto;padding:22px 26px}.kicker{color:#8effe0;letter-spacing:.16em;font-size:.82rem}h1{color:#aeffe5;font-size:clamp(2rem,4.2vw,3.8rem);margin:5px 0;line-height:1.12}p{color:#b7cddf}a{color:#88f9df}.layout{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.panel{background:#0f2139e7;border:1px solid #385d79;border-radius:17px;padding:18px;margin-bottom:16px;box-shadow:0 12px 38px #0005}h2{font-size:1.13rem;margin:0 0 11px}.control{display:flex;flex-wrap:wrap;gap:8px;align-items:center}button{padding:10px 15px;border-radius:10px;border:1px solid #4f9eaa;background:#18536b;color:white;cursor:pointer}button[aria-pressed=true]{background:#0d8177}input{accent-color:#8effdb}canvas{width:100%;height:auto;display:block;background:#071729;border:1px solid #2f5671;border-radius:13px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.tile{border:1px solid #355f79;padding:12px;border-radius:12px}.tile strong{display:block;font-size:1.25rem;color:#99ffe2;overflow-wrap:anywhere}pre{color:#bde5f5;font:12px/1.65 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:480px;overflow:auto}.warn{color:#ffce91}table{border-collapse:collapse;width:100%;font-size:.85rem}th,td{text-align:left;padding:8px;border-bottom:1px solid #385977}#status{color:#a9ffdf;min-height:24px}@media(max-width:910px){.layout{grid-template-columns:1fr}header,main,footer{padding:14px}.stats{grid-template-columns:1fr 1fr}}</style></head><body>
+<header><div class="kicker">ROOT 0 / ZEPTOVERSE / NCI-033 / EXECUTABLE SPECTRAL PHYSICS</div>
+<h1>One scale.<br>Two boundary geometries.<br>Different field spectra.</h1>
+<p>Compare scalar standing-wave modes of a Dirichlet box against the periodic modes of a flat three-torus. The reference frame stays <strong>−1 cosmic background, 0 singlet reference, +1 field excitation</strong>. These are not measurements of quantum gravity.</p><p><a href="./index.html">Zeptoverse home</a> · <a href="./nci-032.html">Previous scale physics chapter</a> · <a href="./kernel/nci-033-kernel.mjs">Executable module</a> · <a href="./kernel/nci-033.test.mjs">Regression tests</a></p></header>
+<main><section class="panel"><h2>Geometry and spectrum controls</h2>
+<div class="control"><button id="box" aria-pressed="true">□ Dirichlet box</button><button id="torus" aria-pressed="false">◎ Periodic toroid T³</button><label>Index cutoff <input id="cutoff" type="range" min="1" max="5" value="3"> <span id="cut">3</span></label><label>log₁₀(L/m) <input id="length" type="range" min="-35" max="-9" value="-21"> <span id="lengthLabel">−21</span></label></div>
+<p id="status">Ready</p><div class="stats"><div class="tile">First excited quantum<strong id="energy">—</strong></div><div class="tile">Lowest-shell multiplicity<strong id="count">—</strong></div><div class="tile">Indexed excited modes<strong id="modes">—</strong></div></div></section>
+<div class="layout"><div><section class="panel"><h2>Boundary geometry and eigenmodes</h2><canvas id="diagram" width="1000" height="560" role="img" aria-label="Cube standing wave or periodic torus schematic with spectral shell nodes"></canvas><p class="warn">A flat T³ is represented here by periodic identification of three opposite boundary pairs, not a claim that a 3-torus can be depicted literally as a doughnut in three-dimensional space.</p></section><section class="panel"><h2>Lowest spectral shells</h2><table><thead><tr><th>Index squared (n²)</th><th>Degeneracy</th><th>One-quantum energy (J)</th></tr></thead><tbody id="shells"></tbody></table></section></div>
+<div><section class="panel"><h2>Fixed cosmic ternary coordinate</h2><pre id="frame"></pre></section><section class="panel"><h2>Boundary invariant audit</h2><pre id="audit"></pre></section><section class="panel"><h2>Physics and its limits</h2><p>For a massless scalar field, the Dirichlet cube admits positive mode indices with <code>k = π√(n²)/L</code>. The flat periodic three-torus admits signed integer mode indices with <code>k = 2π√(n²)/L</code>, including a zero-frequency mode that must be treated separately.</p><p>These eigenmodes are not a renormalized Casimir energy or stress tensor. The finite mode cutoff is computational; subtracting infinite vacuum mode sums would require additional geometry-aware renormalization and regularization.</p><p>At zeptometer or Planck lengths, literal material box boundaries are not physically validated. This experiment demonstrates a mathematical change in allowed spectra under different boundary conditions.</p></section></div></div></main><footer>Zeptoverse NCI-033 · scalar Laplacian mode mathematics · 1/L spectral scaling · physical validity boundaries preserved</footer>
+<script type="module">
+import {spectrum,compare,scaleTest,audit,FRAME} from "./kernel/nci-033-kernel.mjs";
+const $=id=>document.getElementById(id),ctx=$("diagram").getContext("2d");let geometry="DIRICHLET_BOX";
+function line(x,y,a,b,color="#4f879a"){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(a,b);ctx.strokeStyle=color;ctx.lineWidth=3;ctx.stroke()}
+function draw(spec){
+ ctx.clearRect(0,0,1000,560);const w=1000;ctx.fillStyle="#e4f9fc";ctx.textAlign="center";ctx.font="bold 23px ui-monospace,monospace";
+ ctx.fillText(geometry==="DIRICHLET_BOX"?"DIRICHLET BOX · ZERO ON BOUNDARY":"FLAT THREE-TORUS · PERIODIC IDENTIFICATION",w/2,56);
+ const x=300,y=205,z=120,offset=105;
+ const corners=[[x,y],[x+z*2,y],[x+z*2,y+z*2],[x,y+z*2]];
+ ctx.lineWidth=4;ctx.strokeStyle="#7fffe0";ctx.strokeRect(x,y,z*2,z*2);ctx.strokeStyle="#709fd8";ctx.strokeRect(x+offset,y-offset,z*2,z*2);
+ corners.forEach(([a,b],i)=>line(a,b,a+offset,b-offset));
+ if(geometry==="PERIODIC_T3"){
+  ctx.lineWidth=3;ctx.strokeStyle="#e5abfa";ctx.setLineDash([12,9]);ctx.beginPath();ctx.moveTo(300,315);ctx.bezierCurveTo(90,110,610,110,540,325);ctx.stroke();ctx.beginPath();ctx.moveTo(400,205);ctx.bezierCurveTo(630,15,720,360,465,350);ctx.stroke();ctx.setLineDash([]);
+ }else{
+  for(let i=1;i<=3;i++){ctx.strokeStyle="#6acdbf";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+z*2*i/4,y);ctx.lineTo(x+z*2*i/4,y+z*2);ctx.stroke()}
+ }
+ const a=spec.shells.slice(0,10);
+ a.forEach((s,i)=>{const xx=680+(i%4)*75,yy=155+Math.floor(i/4)*84;
+ ctx.beginPath();ctx.arc(xx,yy,Math.min(26,6+s.degeneracy*1.1),0,Math.PI*2);ctx.strokeStyle="#f5bb8d";ctx.lineWidth=2;ctx.stroke();
+ ctx.fillStyle="#c9edfb";ctx.font="14px ui-monospace,monospace";ctx.fillText(s.n2,xx,yy+5)});
+ ctx.fillStyle="#bdeadd";ctx.font="17px ui-monospace,monospace";
+ ctx.fillText("−1 BACKGROUND      0 SINGLET      +1 EXCITATION",500,528);
+}
+function render(){
+ const exponent=Number($("length").value),cutoff=Number($("cutoff").value),sideM=Math.pow(10,exponent);
+ $("cut").textContent=cutoff;$("lengthLabel").textContent=exponent;
+ const spec=spectrum({sideM,maxIndex:cutoff,geometry});
+ const pair=compare({sideM,maxIndex:cutoff}),scaling=scaleTest({sideM,maxIndex:Math.min(cutoff,3)});
+ $("box").setAttribute("aria-pressed",String(geometry==="DIRICHLET_BOX"));
+ $("torus").setAttribute("aria-pressed",String(geometry==="PERIODIC_T3"));
+ $("energy").textContent=spec.fundamental.oneQuantumEnergyJ.toExponential(3)+" J";
+ $("count").textContent=spec.shells[0].degeneracy;
+ $("modes").textContent=spec.excitedModeCount;
+ $("frame").textContent=FRAME.map(s=>s.sign+" = "+s.role).join("\n")+"\n\nCMB reference ≈ "+spec.cmbK+" K\nL = "+spec.sideM.toExponential(3)+" m\nMode geometry: "+spec.geometry;
+ $("audit").textContent="Box first index: [1,1,1]\nT³ first nonzero shell: n²=1\nBox lowest degeneracy: "+pair.boxMinimumDegeneracy+"\nT³ lowest degeneracy: "+pair.torusMinimumDegeneracy+"\nPeriodic massless zero mode: "+pair.periodicZeroModePresent+"\nT³/box first excitation ratio: "+pair.lowestEnergyRatioTorusToBox.toFixed(8)+"\nExpected: (2/√3) = "+pair.expectedRatio.toFixed(8)+"\nFrequency-energy 1/L check: "+scaling.passed+"\nVacuum Casimir stress computed: FALSE\nQuantum gravity predicted: FALSE";
+ $("shells").replaceChildren();spec.shells.slice(0,22).forEach(s=>{const tr=document.createElement("tr");[s.n2,s.degeneracy,s.oneQuantumEnergyJ.toExponential(4)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.append(td)});$("shells").append(tr)});
+ $("status").textContent=geometry+" · "+(sideM<1e-9?"mathematical extrapolation only":"ideal scalar boundary model");
+ draw(spec);
+}
+$("box").onclick=()=>{geometry="DIRICHLET_BOX";render()};
+$("torus").onclick=()=>{geometry="PERIODIC_T3";render()};
+$("cutoff").oninput=render;$("length").oninput=render;render();
+</script></body></html>
