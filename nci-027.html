@@ -1,0 +1,39 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zeptoverse NCI-027 · Independent Witness Acquisition Kernel</title>
+<style>:root{color-scheme:dark;background:#08111e;color:#edfaff;font:16px system-ui}body{max-width:1130px;margin:auto;padding:24px}h1{color:#87ffe3}p{color:#bed0de;line-height:1.55}section{background:#102138;padding:19px;border:1px solid #385d76;border-radius:14px;margin:15px 0}button{background:#18546b;border:1px solid #5b9ca9;border-radius:10px;padding:11px 14px;color:white;margin:4px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b7e6f0}a{color:#86f7dc}.notice{color:#ffd19c}#stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}.tile{border:1px solid #3f6579;border-radius:10px;padding:12px}.big{font-size:1.35rem;color:#89ffe2;font-weight:700}</style></head><body>
+<p>ZEPTOVERSE / NCI-027 / EXECUTABLE EVIDENCE KERNEL</p><h1>Three Sensor Packets · Trace Roots Before Trust</h1>
+<p>This is a runnable sensor-packet acquisition protocol. It checks declared ancestry, replay, reading agreement and time skew. The demonstration uses generated fixtures, not physical sensors; independent evidence cannot be authenticated merely by declaring three different roots.</p>
+<section><h2>Acquire three observations</h2><pre>       EVENT: therm-001
+          /    |    \
+       S-A    S-B   S-C
+        |      |     |
+     ROOT A ROOT B ROOT C
+          \    |    /
+           COMPARE
+             |
+       ANCESTRY / CLOCK / KELVIN
+             |
+       STRUCTURALLY ELIGIBLE
+             |
+         TRUST WITHHELD
+     (no authenticated roots)</pre>
+<button id="clean">Add 3 separate declared roots</button><button id="shared">Add 3 packets with shared upstream</button><button id="skew">Add timestamp-skew fixture</button><button id="disagree">Add value-disagreement fixture</button><button id="replay">Try duplicate packet</button><button id="check">Checkpoint</button><button id="reset">Reset</button><p id="status"></p><div id="stats"></div></section>
+<section><h2>Packet ancestry and observations</h2><pre id="packets"></pre></section>
+<section><h2>Gate and append-only evidence</h2><pre id="audit"></pre><pre id="events"></pre><p class="notice">Three different source labels are insufficient to authenticate independent physical sensors. There are no instrument attestations, signed receipts, trusted clocks, or live measurements in this demonstration. Therefore this kernel cannot honestly issue a trusted 1/1 END END checkpoint yet.</p><p><a href="./kernel/nci-027-kernel.mjs">Executable kernel source</a> · <a href="./kernel/nci-027.test.mjs">Regression tests</a> · <a href="./nci-026.html">Three-method shared-ancestor audit</a></p></section>
+<script type="module">
+import {begin,acquire,inspect,checkpoint,audit,demoPackets} from "./kernel/nci-027-kernel.mjs";
+const $=id=>document.getElementById(id);let s=begin();
+function show(message){const g=inspect(s,"therm-001"),report=audit(s);$("status").textContent=message;
+ $("stats").innerHTML=[["Accepted packets",report.receipts],["Status",g.status],["Structurally independent",String(g.structurallyIndependent)],["Authenticated",String(g.authenticated??false)]].map(([a,b])=>'<div class="tile">'+a+'<div class="big">'+b+'</div></div>').join("");
+ $("packets").textContent=s.packets.length?s.packets.map(p=>p.sensorId+" "+p.valueK+" K at "+p.timestampMs+" ms\n  root="+p.rootId+" upstream="+p.upstreamRoots.join(",")+" nonce="+p.nonce).join("\n\n"):"No packets acquired.";
+ $("audit").textContent="Value spread: "+(g.spreadK??"n/a")+" K\nTime skew: "+(g.skewMs??"n/a")+" ms\nShared ancestry: "+(g.hasSharedRoots??"n/a")+"\nSource authentication: "+(g.authenticated??false)+"\nTrusted: "+g.trusted+"\nCheckpoint seal: "+(s.seal??"NONE")+"\nAppend-only events: "+report.events;
+ $("events").textContent=s.events.length?s.events.map(e=>e.seq+" "+e.type+" "+e.reason??"").join("\n"):"Genesis";
+}
+function batch(options,label){s=begin();for(const p of demoPackets(options))s=acquire(s,p).state;show(label)}
+$("clean").onclick=()=>batch({},"Separate declared roots (not authenticated)");
+$("shared").onclick=()=>batch({shared:true},"Shared ancestry detected");
+$("skew").onclick=()=>batch({skew:true},"Clock-skew fixture");
+$("disagree").onclick=()=>batch({disagree:true},"Reading-disagreement fixture");
+$("replay").onclick=()=>{const p=demoPackets()[0],r=acquire(s,p);s=r.state;show(r.reason)};
+$("check").onclick=()=>{const result=checkpoint(s,"therm-001");s=result.state;show("Checkpoint: "+result.decision.status+"; trust withheld")};
+$("reset").onclick=()=>{s=begin();show("New evidence genesis")};show("Ready");
+</script></body></html>
