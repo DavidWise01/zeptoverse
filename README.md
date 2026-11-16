@@ -494,3 +494,21 @@ NCI-030 consumes already verified NCI-029 issuer-signed calibration certificates
 - Browser UI plots three uncertainty bands, common overlap, signed fixture credentials and the append-only gate history. Fixtures include compatible readings, conflict, shared issuer domain and expired certificates.
 
 Run `node kernel/nci-030.test.mjs` on Node 22 or newer. Committing the executable code is not evidence that CI completed or the Pages deployment is live.
+
+## NCI-031 — Correlated uncertainty cannot be averaged away
+
+[Interactive Pages kernel](nci-031.html) · [Executable ES module](kernel/nci-031-kernel.mjs) · [Node tests](kernel/nci-031.test.mjs).
+
+NCI-030's issuer-signed `uncertaintyK` remains a **declared absolute ±K bound**. NCI-031 deliberately does **not** reinterpret that field as statistical standard deviation. Instead it accepts a separate, **unsigned and hypothetical** statistical sidecar containing three positive independent `σ_i` assumptions and a shared `σ_common` assumption for a named environmental/calibration disturbance.
+
+For three readings `T_i` whose independent errors are modeled as uncorrelated with standard deviation `σ_i`, and an additive common-mode error present identically on each sensor:
+- `w_i=(1/σ_i²)/Σ_j(1/σ_j²)`; `estimate=Σ_i(w_i T_i)`.
+- `Cov(T_i,T_j)=σ_common² + δ_ij σ_i²`.
+- `Var(estimate)=σ_common² + 1/Σ_i(1/σ_i²)`.
+- `σ_combined=sqrt(σ_common² + σ_independent_mean²) >= σ_common`.
+
+For `σ_i=0.01 K` and `σ_common=0.02 K`, three repeated measurements reduce only the independent component to approximately `0.005774 K`, while the modeled total remains approximately `0.020817 K`. The common mode is **not** divided by `sqrt(3)`.
+
+`evaluate` additionally checks the inherited NCI-030 **signed absolute-bound interval compatibility**, issuer-domain and source-root structural independence and timestamp checks. It can return `CORRELATION_ACCOUNTED` or refuse a fixture with `SHARED_ISSUER_DOMAIN` or `INTERVAL_CONFLICT`. The statistical sigma sidecar is not signed by a calibration authority, and the example assumptions are neither measured nor instrument-validated. Thus every NCI-031 checkpoint is untrusted for **physical** independence and stays unsealed. This is a mathematical covariance demonstration, not a validated measurement uncertainty budget.
+
+The full Pages lab includes generated signed-credential fixtures, covariance bar chart, separate uncertainty decomposition, root audit and append-only checkpoint events. Run `node kernel/nci-031.test.mjs` using Node 22+; CI completion and live Pages deployment require separate confirmation.
